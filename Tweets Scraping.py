@@ -1,8 +1,20 @@
 import pandas as pd
 import numpy as np
 import time
+from _datetime import datetime
 import tweepy
+import re
+import nltk
+from pytz import timezone
 import Credentials
+from wordcloud import WordCloud
+from matplotlib import pyplot as plt
+from bidi.algorithm import get_display
+
+# Setting start and end date, to scrape tweets in between
+# datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
+startDate = datetime(2020, 12, 4, 20, 35, 00) # tzinfo=timezone('Israel')
+endDate = datetime(2020, 12, 7, 20, 35, 00) # tzinfo=timezone('Israel')
 
 # Creating relevant dictionaries to the scarping process
 # The keys are the politician last name
@@ -68,53 +80,130 @@ politicians_dct = {'Abou-Shahadeh': ['ShahadehAbou', 'Meshutefet'],
                    'Malkieli': ['malkielim82', 'Shas'],
                    'Margi': ['yakmargi', 'Shas'],
                    'Nissenkorn': ['AviNissenkorn', 'Kachol_Lavan'],
-                   'Netanyahu': ['netanyahu', 'Likud']
+                   'Netanyahu': ['netanyahu', 'Likud'],
                    'Segalovitz': ['YSegalovitz', 'Yesh_Atid'],
                    'Sova': ['evgenysova', 'Israel_Beytenu'],
                    'Sofer': ['ofir_sofer', 'Yamina'],
                    'Smotrich': ['bezalelsm', 'Yamina'],
-                   'Saar': ['gidonsaar', 'Likud']
-                   }
+                   'Saar': ['gidonsaar', 'Likud'],
+                   'Abbas': ['mnsorabbas', 'Meshutefet'],
+                   'Odeh': ['AyOdeh', 'Meshutefet'],
+                   'Hava-Atia': ['ettyatia', 'Likud'],
+                   'Forer': ['oded_forer', 'Israel_Beytenu'],
+                   'Ploskov': ['TaliPloskov', 'Likud'],
+                   'Froman': ['mkorlyfroman', 'Yesh_Atid'],
+                   'Friedman': ['TehilaFriedman', 'Kachol_Lavan'],
+                   'Peretz_Amir': ['amirperetz', 'Avoda'],
+                   'Peretz_Rafi': ['realrafiperets', 'Bait_Yehudi'],
+                   'Kushnir': ['kushnir_al', 'Israel_Beytenu'],
+                   'Kisch': ['YoavKisch', 'Likud'],
+                   'Kallner': ['ArielKallner', 'Likud'],
+                   'Karhi': ['shlomo_karhi', 'Likud'],
+                   'Regev': ['regev_miri', 'Likud'],
+                   'Roll': ['idanroll', 'Yesh_Atid'],
+                   'Razvozov': ['YRazvozov', 'Yesh_Atid'],
+                   'Shasha-Biton': ['sbyifat', 'Likud'],
+                   'Shihadeh': ['MtanesShihadeh', 'Meshutefet'],
+                   'Steinitz': ['steinitz_yuval', 'Likud'],
+                   'Shitrit': ['shitrit_keti', 'Likud'],
+                   'Stern': ['Elazar_stern', 'Yesh_Atid'],
+                   'Shay-Vazan': ['HVazan', 'Kachol_Lavan'],
+                   'Shir': ['MichalShir', 'Likud'],
+                   'Shelah': ['OferShelah', 'Yesh_Atid'],
+                   'Shmuli': ['ishmuli', 'Avoda'],
+                   'Shefa': ['ramshefa', 'Kachol_Lavan'],
+                   'Shaked': ['Ayelet__Shaked', 'Yamina'],
+                   'Touma-Sliman': ['AidaTuma', 'Meshutefet'],
+                   'Tamano-Shata': ['pnina_tamano_sh', 'Kachol_Lavan']}
 
-# No Twitter
+media_dct = {'Haaretz': 'Haaretz',
+             'The_Marker': 'TheMarker',
+             'Yediot': 'YediotAhronot',
+             'Calcalist': 'calcalist',
+             'Globes': 'globesnews',
+             'Israel_Hayom': 'IsraelHayomHeb',
+             'Maariv': 'MaarivOnline',
+             'Makor_Rishon': 'MakorRishon',
+             'Ynet' : 'ynetalerts',
+             'Walla': 'WallaNews',
+             'Mida': 'MidaWebsite',
+             '7_Eye': 'the7i',
+             'N12': 'N12News',
+             'Reshet': 'Reshettv',
+             'Kann': 'kann_news',
+             'Arutz_20': 'arutz20',
+             'Arutz_7': 'arutz7heb',
+             'Knesset': 'KnessetT',
+             'GLZ': 'GLZRadio',
+             'Reshet_Bet': 'ReshetBet',
+             '103FM': 'radio103fm'}
 
-# Yinon Azoulay
-# Israel Eichler - Yahadut Hatora
-# Moshe Arbel
-# Yaakov Asher
-# Ram ben barak
-# Baruchi Eliyahu
-# Youssef Jabarin
-# Moshe Gafni - Yahadut Hatora
-# Walid Taha
-# Yaakov Tesler
-# Hiba Yazbak
-# Yitzchak Cohen
-# Chaim Katz - Likud
-# Yariv Levin - Likud
-# Yaakov Litzman - Yahadut Hatora
-# Nahari Meshulam
-# Salah Sondus - Meshutefet
-# Saadi Ossama - Meshutefet
-
-# Maybe not official twitter
-
-# Saeed Alkhrumi
-# Ofir Akunis
-# Keren Barak
-# Eitan Ginzburg
-# Uzi Dayan
-# Avi Dichter
-# Eman Khatib - Yassin
-# Boaz Toporovsky
-# Meir Cohen
-# Ofer Cassif
-# Fateen Mulla
-# Yulia Malinovsky
-# Michael Malkieli
-# Yakov Margi
-# yoav segalovitz
-# Evgeny Sova
+journalists_dct = {'Weiss': ['danawt', 'N12', 'Female'],        # N12
+                   'Segal_Amit': ['amit_segal', 'N12', 'Male'],
+                   'Nir': ['arad_nir', 'N12', 'Male'],
+                   'Liel': ['DaphnaLiel', 'N12', 'Female'],
+                   'Simchayoff': ['Elad_Si', 'N12', 'Male'],
+                   'Cherki': ['yaircherki', 'N12', 'Male'],
+                   'Avraham': ['yaronavraham', 'N12', 'Male'],
+                   'Marciano': ['KerenMarc', 'N12', 'Female'],
+                   'Levi': ['LeviYonit', 'N12', 'Female'],
+                   'Cushmaro': ['DanyCushmaro', 'N12', 'Male'],
+                   'Drucker': ['RavivDrucker', 'Reshet', 'Male'], # Reshet
+                   'Kra': ['baruchikra', 'Reshet', 'Male'],
+                   'Hasson': ['AyalaHasson', 'Reshet', 'Female'],
+                   'Ovadia': ['sefiova', 'Reshet', 'Male'],
+                   'Ben-Haim': ['AvishayBenHaim', 'Reshet', 'Male'],
+                   'Glickman': ['aviadglickman', 'Reshet', 'Male'],
+                   'Ish-Shalom': ['tamarishshalom', 'Reshet', 'Female'],
+                   'Novick': ['akivanovick', 'Kann', 'Male'],              # Kann
+                   'Lampel': ['DoriaLampel', 'Kann', 'Female'],
+                   'Menashe': ['ela1949', 'Kann', 'Female'],
+                   'Almog': ['almog_tamar', 'Kann', 'Female'],
+                   'Amsterdamski': ['amsterdamski2', 'Kann', 'Male'],
+                   'Krakovsky': ['YoavYoavkrak', 'Kann', 'Male'],
+                   'Shemesh': ['shemeshmicha', 'Kann', 'Male'],
+                   'Segal_Erel': ['ErelSegal', 'Arutz_20', 'Male'],    # Arutz 20
+                   'Magal': ['YinonMagal', 'Arutz_20', 'Male'],
+                   'Riklin': ['Riklin10', 'Arutz_20', 'Male'],
+                   'Golan': ['BoazGolan', 'Arutz_20', 'Male'],
+                   'Levinson': ['chaimlevinson', 'Haaretz', 'Male'],  # Haaretz
+                   'Landau': ['noa_landau', 'Haaretz', 'Female'],
+                   'Breiner': ['JoshBreiner', 'Haaretz', 'Male'],
+                   'Tucker': ['nati_tucker', 'The_Marker', 'Male'],   # The Marker
+                   'Rolnik': ['grolnik', 'The_Marker', 'Male'],
+                   'Maor': ['DafnaMaor', 'The_Marker', 'Female'],
+                   'Linder': ['RonnyLinder', 'The_Marker', 'Female'],
+                   'Peretz_Sami': ['peretzsami', 'The_Marker', 'Male'],
+                   'Avriel': ['EytanAvriel', 'The_Marker', 'Male'],
+                   'Liebskind': ['KalmanLiebskind', 'Maariv', 'Male'],  # Maariv
+                   'Caspit': ['BenCaspit', 'Maariv', 'Male'],
+                   'Rayva-Barsky': ['AnnaBarskiy', 'Maariv', 'Female'],
+                   'Eyal': ['Nadav_Eyal', 'Yediot', 'Male'],            # Yediot
+                   'Shlezinger': ['judash0', 'Israel_Hayom', 'Male'],   # Israel Hayom
+                   'Bismuth': ['BismuthBoaz', 'Israel_Hayom', 'Male'],
+                   'Bigman': ['akibigman', 'Israel_Hayom', 'Male'],
+                   'Tuchfeld': ['tuchfeld', 'Israel_Hayom', 'Male'],
+                   'Kahana_Ariel': ['arik3000', 'Israel_Hayom', 'Male'],
+                   'Allon': ['gideonallon', 'Israel_Hayom', 'Male'],
+                   'Zwick': ['giladzw', 'Israel_Hayom', 'Male'],
+                   'Segal_Haggai': ['haggai_segal', 'Makor_Rishon', 'Male'], # Makor Rishon
+                   'Schnabel': ['ariel_schnabel', 'Makor_Rishon', 'Male'],
+                   'German': ['ataragerman1', 'Makor_Rishon', 'Female'],
+                   'Ifrach': ['yehuday30', 'Makor_Rishon', 'Male'],
+                   'Goldclang': ['orlygogo', 'Makor_Rishon', 'Female'],
+                   'Grinzaig': ['avishaigrinzaig', 'Globes', 'Male'],        # Globes
+                   'Schneider': ['talschneider', 'Globes', 'Female'],
+                   'Avitan-Cohen': ['Shiritc', 'Globes', 'Female'],
+                   'Neubach': ['kereneubach', 'Reshet_Bet', 'Female'],       # Reshet Bet
+                   'Lieberman': ['asaf_lib', 'Reshet_Bet', 'Male'],
+                   'Kam': ['ZeevKam', 'Reshet_Bet', 'Male'],
+                   'Shnerb': ['IshayShnerb', 'Galatz', 'Male'],              # Galatz
+                   'Shtaif': ['hadasshtaif', 'Galatz', 'Female'],
+                   'Shalev': ['talshalev1', 'Walla', 'Female'],              # Walla
+                   'Ravid': ['BarakRavid', 'Walla', 'Male'],
+                   'Nahari': ['OrenNahari', 'Walla', 'Male'],
+                   'Adamker': ['YakiAdamker', 'Walla', 'Male'],
+                   'Somfalvi': ['attilus', 'Ynet', 'Male']}                   # Ynet
 
 # Setting the necessary twitter developer credentials to use the tweepy package and scrape tweets
 # These are set as environment variables
@@ -122,25 +211,99 @@ auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, wait_on_rate_limit=True)
 
-# Iterate through the politicians twitter users and scrape each user tweets
-Tweets = pd.DataFrame(columns=['politician', 'party', 'created_at', 'id', 'text'])
+# Create a dataframe in which the tweets will be stored
+Tweets = pd.DataFrame()
 
+# Iterate through the politicians twitter users and scrape each user tweets
+# Code credit to Alexander Psiuk at https://gist.github.com/alexdeloy
+# and Martin Beck at https://towardsdatascience.com/how-to-scrape-tweets-from-twitter-59287e20f0f1
 for politician in politicians_dct.keys():
     username = politicians_dct[politician][0]
-    count = 150
     try:
-        # Creation of query method using parameters
-        tweets = tweepy.Cursor(api.user_timeline, id=username).items(count)
+        tweets = []
+        tmpTweets = api.user_timeline(username)
+        for tweet in tmpTweets:
+            if startDate < tweet.created_at < endDate:
+                tweets.append(tweet)
+
+        while tmpTweets[-1].created_at > startDate:
+            print("Last Tweet @", tmpTweets[-1].created_at, " - fetching some more")
+            tmpTweets = api.user_timeline(username, max_id=tmpTweets[-1].id)
+            for tweet in tmpTweets:
+                if startDate < tweet.created_at < endDate:
+                    tweets.append(tweet)
 
         # Pulling information from tweets iterable object
-        tweets_list = [[politician, politicians_dct[politician][1], tweet.created_at, tweet.id, tweet.text] for tweet in tweets]
+        tweets_list = [[politician,
+                        politicians_dct[politician][1],
+                        tweet.created_at,
+                        tweet.id,
+                        # tweet.quote_count,
+                        # tweet.reply_count,
+                        # tweet.retweet_count,
+                        # tweet.favorite_count,
+                        # tweet.in_reply_to_screen_name,
+                        # tweet.is_quote_status,
+                        # tweet.quoted_status,
+                        tweet.text] for tweet in tweets]
 
         # Creation of dataframe from tweets list
         # Add or remove columns as you remove tweet information
         tweets_df = pd.DataFrame(tweets_list)
-        Tweets = Tweets.append(tweets_df)
+        Tweets = pd.concat([Tweets, tweets_df])
     except BaseException as e:
         print('failed on_status,', str(e))
         time.sleep(3)
 
+# Change Tweets df column names
+Tweets = Tweets.rename(columns={0: 'politician',
+                                1: 'party',
+                                2: 'created_at',
+                                3: 'id',
+                                4: 'text'})
 
+# Reset index
+Tweets = Tweets.reset_index(drop=True)
+
+# Text Preprocessing
+
+# Delete all urls from the strings, which are almost solely used to retweet
+Tweets['text'] = [re.sub(r'http\S+', "", txt) for txt in Tweets['text']]
+
+# Delete punctuation
+Tweets['text'] = [re.sub(r'[^\w\s]', '', str(txt).lower().strip()) for txt in Tweets['text']]
+
+# Tokenize
+Tweets['text'] = [txt.split() for txt in Tweets['text']]
+
+# Delete stopwords
+
+# Load the Mila Institute hebrew words dataset
+stopwords_df = pd.read_excel(r'Mila - Stopwords.xlsx')
+
+# Define the types of words we wand to delete from the texts and pass them to a list
+delete_lst = ['conjunction', 'preposition', 'negation', 'pronoun', 'copula']
+stopwords_lst = stopwords_df['Undotted'][stopwords_df['POS'].isin(delete_lst)].tolist()
+
+# Delete
+for txt in Tweets['text']:
+    [txt.remove(word) for word in txt if word in stopwords_lst]
+
+# Untokenize
+for i in Tweets.index.values.tolist():
+    Tweets['text'][i] = ' '.join(Tweets['text'][i])
+
+# Now, we'll create several dataframes with the groupby function, each of them grouping the tweets along
+# different aspect. This will allow us to create different wordclouds to analyze different aspects
+system_df = ' '.join(txt for txt in Tweets.text)
+politician_df = Tweets.groupby(['politician'], as_index=False).agg({'text': ' '.join})
+party_df = Tweets.groupby(['party'], as_index=False).agg({'text': ' '.join})
+
+
+# Creating the wordclouds
+# bidi_text = get_display(system_df)
+# wordcloud = WordCloud().generate(bidi_text)
+#
+# plt.imshow(wordcloud, interpolation='bilinear')
+# plt.axis("off")
+# plt.show()
