@@ -2,208 +2,25 @@ import pandas as pd
 import numpy as np
 import time
 from _datetime import datetime
+import _json
 import tweepy
 import re
-import nltk
-from pytz import timezone
-import Credentials
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
+import seaborn as sns
 from bidi.algorithm import get_display
+from Credentials import consumer_key, consumer_secret, access_token, access_token_secret
+from Dictionaries import politicians_dct, journalists_dct, media_dct
+from Stopwords import stopwords_lst
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from googletrans import Translator
+# nltk.download('vader_lexicon')
 
 # Setting start and end date, to scrape tweets in between
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
-startDate = datetime(2020, 12, 4, 20, 35, 00) # tzinfo=timezone('Israel')
-endDate = datetime(2020, 12, 7, 20, 35, 00) # tzinfo=timezone('Israel')
-
-# Creating relevant dictionaries to the scarping process
-# The keys are the politician last name
-# The values are lists which contain in index zero the politician @Hashtag id, and in index one it's party name
-politicians_dct = {'Abou-Shahadeh': ['ShahadehAbou', 'Meshutefet'],
-                   'Abutbul': ['Abutbulm', 'Shas'],
-                   'Avidar': ['avidareli', 'Israel_Beytenu'],
-                   'Edelstein': ['YuliEdelstein', 'Likud'],
-                   'Elharrar': ['KElharrar', 'Yesh_Atid'],
-                   'Alkhrumi': ['saeedalkhrumi', 'Meshutefet'],
-                   'Elkin': ['zeev_elkin', 'Likud'],
-                   'Amsalem': ['dudiamsalem', 'Likud'],
-                   'Akunis': ['OfirAkunis', 'Likud'],
-                   'Ashkenazi': ['Gabi_Ashkenazi', 'Kachol_Lavan'],
-                   'Busso': ['BussoUriel', 'Shas'],
-                   'Bitan': ['davidbitan', 'Likud'],
-                   'Bennett': ['naftalibennett', 'Yamina'],
-                   'Barbivay': ['OrnaBarb', 'Yesh_Atid'],
-                   'Barak': ['KerenBarak', 'Likud'],
-                   'Barkat': ['NirBarkat', 'Likud'],
-                   'Golan_Yair': ['YairGolan1', 'Meretz'],
-                   'Golan_May': ['GolanMay', 'Likud'],
-                   'Ginzburg': ['EitanGinzburg', 'Kachol_Lavan'],
-                   'Gallant': ['yoavgallant', 'Likud'],
-                   'Gamliel': ['GilaGamliel', 'Likud'],
-                   'Gantz': ['gantzbe', 'Kachol_Lavan'],
-                   'Dayan': ['DayanUzi', 'Likud'],
-                   'Dichter': ['avidichter', 'Likud'],
-                   'Hauser': ['ZviHauser', 'Derech_Eretz'],
-                   'Horowitz': ['NitzanHorowitz', 'Meretz'],
-                   'Halevi': ['HaleviAmit', 'Likud'],
-                   'Hanegbi': ['Tzachi_Hanegbi', 'Likud'],
-                   'Hendel': ['YoazHendel1', 'Derech_Eretz'],
-                   'Haskel': ['SharrenHaskel', 'Likud'],
-                   'Cotler-Wunsh': ['CotlerWunsh', 'Kachol_Lavan'],
-                   'Zohar': ['zoharm7', 'Likud'],
-                   'Zamir': ['asafzamir', 'Kachol_Lavan'],
-                   'Zandberg': ['tamarzandberg', 'Meretz'],
-                   'Khatib-Yassin': ['khatib_eman', 'Meshutefet'],
-                   'Toporovsky': ['BToporovsky', 'Yesh_Atid'],
-                   'Tibi': ['Ahmad_tibi', 'Meshutefet'],
-                   'Taieb': ['yossitaieb', 'Shas'],
-                   'Yevarkan': ['GYevarkan', 'Likud'],
-                   'Yankelevitch': ['omeryankelevitc', 'Kachol_Lavan'],
-                   'Yaalon': ['bogie_yaalon', 'Yesh_Atid'],
-                   'Cohen_Eli': ['elicoh1', 'Likud'],
-                   'Cohen_Meir': ['MKmeircohen', 'Yesh_Atid'],
-                   'Cohen_Meirav': ['cohen_meirav', 'Kachol_Lavan'],
-                   'Kahana': ['MatanKahana', 'Yamina'],
-                   'Kamal-Mreeh': ['GadeerMreeh', 'Yesh_Atid'],
-                   'Cassif': ['ofercass', 'Meshutefet'],
-                   'Katz_Ofir': ['OfirKatzMK', 'Likud'],
-                   'Katz_Israel': ['Israel_katz', 'Likud'],
-                   'Lahav-Hertzanu': ['YoraiLahav', 'Yesh_Atid'],
-                   'Levy': ['MKMickeyLevy', 'Yesh_Atid'],
-                   'Levy-Abekasis': ['Orly_levy', 'Gesher'],
-                   'Liberman': ['AvigdorLiberman', 'Israel_Beytenu'],
-                   'Lapid': ['yairlapid', 'Yesh_Atid'],
-                   'Mark': ['OsnathilaMark', 'Likud'],
-                   'Mulla': ['FateenMulla', 'Likud'],
-                   'Michaeli': ['MeravMichaeli', 'Avoda'],
-                   'Malinovsky': ['YuliaMalinovsky', 'Israel_Beytenu'],
-                   'Malkieli': ['malkielim82', 'Shas'],
-                   'Margi': ['yakmargi', 'Shas'],
-                   'Nissenkorn': ['AviNissenkorn', 'Kachol_Lavan'],
-                   'Netanyahu': ['netanyahu', 'Likud'],
-                   'Segalovitz': ['YSegalovitz', 'Yesh_Atid'],
-                   'Sova': ['evgenysova', 'Israel_Beytenu'],
-                   'Sofer': ['ofir_sofer', 'Yamina'],
-                   'Smotrich': ['bezalelsm', 'Yamina'],
-                   'Saar': ['gidonsaar', 'Likud'],
-                   'Abbas': ['mnsorabbas', 'Meshutefet'],
-                   'Odeh': ['AyOdeh', 'Meshutefet'],
-                   'Hava-Atia': ['ettyatia', 'Likud'],
-                   'Forer': ['oded_forer', 'Israel_Beytenu'],
-                   'Ploskov': ['TaliPloskov', 'Likud'],
-                   'Froman': ['mkorlyfroman', 'Yesh_Atid'],
-                   'Friedman': ['TehilaFriedman', 'Kachol_Lavan'],
-                   'Peretz_Amir': ['amirperetz', 'Avoda'],
-                   'Peretz_Rafi': ['realrafiperets', 'Bait_Yehudi'],
-                   'Kushnir': ['kushnir_al', 'Israel_Beytenu'],
-                   'Kisch': ['YoavKisch', 'Likud'],
-                   'Kallner': ['ArielKallner', 'Likud'],
-                   'Karhi': ['shlomo_karhi', 'Likud'],
-                   'Regev': ['regev_miri', 'Likud'],
-                   'Roll': ['idanroll', 'Yesh_Atid'],
-                   'Razvozov': ['YRazvozov', 'Yesh_Atid'],
-                   'Shasha-Biton': ['sbyifat', 'Likud'],
-                   'Shihadeh': ['MtanesShihadeh', 'Meshutefet'],
-                   'Steinitz': ['steinitz_yuval', 'Likud'],
-                   'Shitrit': ['shitrit_keti', 'Likud'],
-                   'Stern': ['Elazar_stern', 'Yesh_Atid'],
-                   'Shay-Vazan': ['HVazan', 'Kachol_Lavan'],
-                   'Shir': ['MichalShir', 'Likud'],
-                   'Shelah': ['OferShelah', 'Yesh_Atid'],
-                   'Shmuli': ['ishmuli', 'Avoda'],
-                   'Shefa': ['ramshefa', 'Kachol_Lavan'],
-                   'Shaked': ['Ayelet__Shaked', 'Yamina'],
-                   'Touma-Sliman': ['AidaTuma', 'Meshutefet'],
-                   'Tamano-Shata': ['pnina_tamano_sh', 'Kachol_Lavan']}
-
-media_dct = {'Haaretz': 'Haaretz',
-             'The_Marker': 'TheMarker',
-             'Yediot': 'YediotAhronot',
-             'Calcalist': 'calcalist',
-             'Globes': 'globesnews',
-             'Israel_Hayom': 'IsraelHayomHeb',
-             'Maariv': 'MaarivOnline',
-             'Makor_Rishon': 'MakorRishon',
-             'Ynet' : 'ynetalerts',
-             'Walla': 'WallaNews',
-             'Mida': 'MidaWebsite',
-             '7_Eye': 'the7i',
-             'N12': 'N12News',
-             'Reshet': 'Reshettv',
-             'Kann': 'kann_news',
-             'Arutz_20': 'arutz20',
-             'Arutz_7': 'arutz7heb',
-             'Knesset': 'KnessetT',
-             'GLZ': 'GLZRadio',
-             'Reshet_Bet': 'ReshetBet',
-             '103FM': 'radio103fm'}
-
-journalists_dct = {'Weiss': ['danawt', 'N12', 'Female'],        # N12
-                   'Segal_Amit': ['amit_segal', 'N12', 'Male'],
-                   'Nir': ['arad_nir', 'N12', 'Male'],
-                   'Liel': ['DaphnaLiel', 'N12', 'Female'],
-                   'Simchayoff': ['Elad_Si', 'N12', 'Male'],
-                   'Cherki': ['yaircherki', 'N12', 'Male'],
-                   'Avraham': ['yaronavraham', 'N12', 'Male'],
-                   'Marciano': ['KerenMarc', 'N12', 'Female'],
-                   'Levi': ['LeviYonit', 'N12', 'Female'],
-                   'Cushmaro': ['DanyCushmaro', 'N12', 'Male'],
-                   'Drucker': ['RavivDrucker', 'Reshet', 'Male'], # Reshet
-                   'Kra': ['baruchikra', 'Reshet', 'Male'],
-                   'Hasson': ['AyalaHasson', 'Reshet', 'Female'],
-                   'Ovadia': ['sefiova', 'Reshet', 'Male'],
-                   'Ben-Haim': ['AvishayBenHaim', 'Reshet', 'Male'],
-                   'Glickman': ['aviadglickman', 'Reshet', 'Male'],
-                   'Ish-Shalom': ['tamarishshalom', 'Reshet', 'Female'],
-                   'Novick': ['akivanovick', 'Kann', 'Male'],              # Kann
-                   'Lampel': ['DoriaLampel', 'Kann', 'Female'],
-                   'Menashe': ['ela1949', 'Kann', 'Female'],
-                   'Almog': ['almog_tamar', 'Kann', 'Female'],
-                   'Amsterdamski': ['amsterdamski2', 'Kann', 'Male'],
-                   'Krakovsky': ['YoavYoavkrak', 'Kann', 'Male'],
-                   'Shemesh': ['shemeshmicha', 'Kann', 'Male'],
-                   'Segal_Erel': ['ErelSegal', 'Arutz_20', 'Male'],    # Arutz 20
-                   'Magal': ['YinonMagal', 'Arutz_20', 'Male'],
-                   'Riklin': ['Riklin10', 'Arutz_20', 'Male'],
-                   'Golan': ['BoazGolan', 'Arutz_20', 'Male'],
-                   'Levinson': ['chaimlevinson', 'Haaretz', 'Male'],  # Haaretz
-                   'Landau': ['noa_landau', 'Haaretz', 'Female'],
-                   'Breiner': ['JoshBreiner', 'Haaretz', 'Male'],
-                   'Tucker': ['nati_tucker', 'The_Marker', 'Male'],   # The Marker
-                   'Rolnik': ['grolnik', 'The_Marker', 'Male'],
-                   'Maor': ['DafnaMaor', 'The_Marker', 'Female'],
-                   'Linder': ['RonnyLinder', 'The_Marker', 'Female'],
-                   'Peretz_Sami': ['peretzsami', 'The_Marker', 'Male'],
-                   'Avriel': ['EytanAvriel', 'The_Marker', 'Male'],
-                   'Liebskind': ['KalmanLiebskind', 'Maariv', 'Male'],  # Maariv
-                   'Caspit': ['BenCaspit', 'Maariv', 'Male'],
-                   'Rayva-Barsky': ['AnnaBarskiy', 'Maariv', 'Female'],
-                   'Eyal': ['Nadav_Eyal', 'Yediot', 'Male'],            # Yediot
-                   'Shlezinger': ['judash0', 'Israel_Hayom', 'Male'],   # Israel Hayom
-                   'Bismuth': ['BismuthBoaz', 'Israel_Hayom', 'Male'],
-                   'Bigman': ['akibigman', 'Israel_Hayom', 'Male'],
-                   'Tuchfeld': ['tuchfeld', 'Israel_Hayom', 'Male'],
-                   'Kahana_Ariel': ['arik3000', 'Israel_Hayom', 'Male'],
-                   'Allon': ['gideonallon', 'Israel_Hayom', 'Male'],
-                   'Zwick': ['giladzw', 'Israel_Hayom', 'Male'],
-                   'Segal_Haggai': ['haggai_segal', 'Makor_Rishon', 'Male'], # Makor Rishon
-                   'Schnabel': ['ariel_schnabel', 'Makor_Rishon', 'Male'],
-                   'German': ['ataragerman1', 'Makor_Rishon', 'Female'],
-                   'Ifrach': ['yehuday30', 'Makor_Rishon', 'Male'],
-                   'Goldclang': ['orlygogo', 'Makor_Rishon', 'Female'],
-                   'Grinzaig': ['avishaigrinzaig', 'Globes', 'Male'],        # Globes
-                   'Schneider': ['talschneider', 'Globes', 'Female'],
-                   'Avitan-Cohen': ['Shiritc', 'Globes', 'Female'],
-                   'Neubach': ['kereneubach', 'Reshet_Bet', 'Female'],       # Reshet Bet
-                   'Lieberman': ['asaf_lib', 'Reshet_Bet', 'Male'],
-                   'Kam': ['ZeevKam', 'Reshet_Bet', 'Male'],
-                   'Shnerb': ['IshayShnerb', 'Galatz', 'Male'],              # Galatz
-                   'Shtaif': ['hadasshtaif', 'Galatz', 'Female'],
-                   'Shalev': ['talshalev1', 'Walla', 'Female'],              # Walla
-                   'Ravid': ['BarakRavid', 'Walla', 'Male'],
-                   'Nahari': ['OrenNahari', 'Walla', 'Male'],
-                   'Adamker': ['YakiAdamker', 'Walla', 'Male'],
-                   'Somfalvi': ['attilus', 'Ynet', 'Male']}                   # Ynet
+startDate = datetime(2020, 12, 11, 00, 00, 00) # tzinfo=timezone('Israel')
+endDate = datetime(2020, 12, 12, 00, 00, 00) # tzinfo=timezone('Israel')
 
 # Setting the necessary twitter developer credentials to use the tweepy package and scrape tweets
 # These are set as environment variables
@@ -212,98 +29,285 @@ auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, wait_on_rate_limit=True)
 
 # Create a dataframe in which the tweets will be stored
-Tweets = pd.DataFrame()
 
 # Iterate through the politicians twitter users and scrape each user tweets
 # Code credit to Alexander Psiuk at https://gist.github.com/alexdeloy
 # and Martin Beck at https://towardsdatascience.com/how-to-scrape-tweets-from-twitter-59287e20f0f1
-for politician in politicians_dct.keys():
-    username = politicians_dct[politician][0]
-    try:
-        tweets = []
-        tmpTweets = api.user_timeline(username)
-        for tweet in tmpTweets:
-            if startDate < tweet.created_at < endDate:
-                tweets.append(tweet)
-
-        while tmpTweets[-1].created_at > startDate:
-            print("Last Tweet @", tmpTweets[-1].created_at, " - fetching some more")
-            tmpTweets = api.user_timeline(username, max_id=tmpTweets[-1].id)
+def tweets_df(dct):
+    Tweets = pd.DataFrame()
+    for user in dct.keys():
+        username = dct[user][0]
+        try:
+            tweets = []
+            tmpTweets = api.user_timeline(username)
             for tweet in tmpTweets:
                 if startDate < tweet.created_at < endDate:
                     tweets.append(tweet)
+            while tmpTweets[-1].created_at > startDate:
+                print("Last Tweet @", tmpTweets[-1].created_at, " - fetching some more")
+                tmpTweets = api.user_timeline(username, max_id=tmpTweets[-1].id)
+                for tweet in tmpTweets:
+                    if startDate < tweet.created_at < endDate:
+                        tweets.append(tweet)
 
-        # Pulling information from tweets iterable object
-        tweets_list = [[politician,
-                        politicians_dct[politician][1],
-                        tweet.created_at,
-                        tweet.id,
-                        # tweet.quote_count,
-                        # tweet.reply_count,
-                        # tweet.retweet_count,
-                        # tweet.favorite_count,
-                        # tweet.in_reply_to_screen_name,
-                        # tweet.is_quote_status,
-                        # tweet.quoted_status,
-                        tweet.text] for tweet in tweets]
+            # Pulling information from tweets iterable object
+            tweets_list = [[user,
+                            dct[user][1],
+                            dct[user][2],
+                            tweet.created_at,
+                            tweet.id,
+                            # tweet._json['quote_count'],
+                            # tweet._json['reply_count'],
+                            tweet._json['retweet_count'],
+                            tweet._json['favorite_count'],
+                            # tweet._json['in_reply_to_screen_name'],
+                            # tweet._json['is_quote_status'],
+                            # tweet._json['quoted_status'],
+                            tweet.text] for tweet in tweets]
 
-        # Creation of dataframe from tweets list
-        # Add or remove columns as you remove tweet information
-        tweets_df = pd.DataFrame(tweets_list)
-        Tweets = pd.concat([Tweets, tweets_df])
-    except BaseException as e:
-        print('failed on_status,', str(e))
-        time.sleep(3)
+            # Creation of dataframe from tweets list
+            # Add or remove columns as you remove tweet information
+            tweets_df = pd.DataFrame(tweets_list)
+            Tweets = pd.concat([Tweets, tweets_df])
 
-# Change Tweets df column names
-Tweets = Tweets.rename(columns={0: 'politician',
-                                1: 'party',
-                                2: 'created_at',
-                                3: 'id',
-                                4: 'text'})
+        except BaseException as e:
+            print('failed on_status,', str(e))
+            time.sleep(3)
 
-# Reset index
-Tweets = Tweets.reset_index(drop=True)
+    # Change Tweets df column names
+    Tweets = Tweets.rename(columns={0: 'name',
+                                    1: 'organization',
+                                    2: 'gender',
+                                    3: 'created_at',
+                                    4: 'id',
+                                    5: 'retweet_count',
+                                    6: 'favorite_count',
+                                    7: 'text'})
 
-# Text Preprocessing
+    return Tweets
 
-# Delete all urls from the strings, which are almost solely used to retweet
-Tweets['text'] = [re.sub(r'http\S+', "", txt) for txt in Tweets['text']]
 
-# Delete punctuation
-Tweets['text'] = [re.sub(r'[^\w\s]', '', str(txt).lower().strip()) for txt in Tweets['text']]
+Politicians_raw = tweets_df(politicians_dct)
+Journalists_raw = tweets_df(journalists_dct)
+Media_raw = tweets_df(media_dct)
 
-# Tokenize
-Tweets['text'] = [txt.split() for txt in Tweets['text']]
 
-# Delete stopwords
+# Export the raw dataframes to the Raw folder
+# printDate = str(endDate).split()[0].replace('2020-', '')
+# Politicians.to_csv(r'Data\Raw\Politicians\Politicians_' + printDate + '.csv')
+# Journalists.to_csv(r'Data\Raw\Journalists\Journalists_' + printDate + '.csv')
 
-# Load the Mila Institute hebrew words dataset
-stopwords_df = pd.read_excel(r'Mila - Stopwords.xlsx')
 
-# Define the types of words we wand to delete from the texts and pass them to a list
-delete_lst = ['conjunction', 'preposition', 'negation', 'pronoun', 'copula']
-stopwords_lst = stopwords_df['Undotted'][stopwords_df['POS'].isin(delete_lst)].tolist()
+# Dataframe organizer function
+def df_organizer(df):  
+    # Reset index
+    df = df.reset_index(drop=True)
+    
+    # Delete all urls from the strings, which are almost solely used to retweet, and 'rt' which indicates a Retweet
+    try:
+        df['text'] = [re.sub(r'http\S+', "", txt) for txt in df['text']]
+        df['text'] = [re.sub(r'rt', "", txt) for txt in df['text']]
+    except TypeError:
+        pass
 
-# Delete
-for txt in Tweets['text']:
-    [txt.remove(word) for word in txt if word in stopwords_lst]
+    # Delete punctuation
+    df['text'] = [re.sub(r'[^\w\s]', '', str(txt).lower().strip()) for txt in df['text']]
 
-# Untokenize
-for i in Tweets.index.values.tolist():
-    Tweets['text'][i] = ' '.join(Tweets['text'][i])
+    # Insert word and character count columns
+    df['word_count'] = df['text'].apply(lambda x: len(str(x).split(" ")))
+    df['char_count'] = df['text'].apply(lambda x: sum(len(word) for word in str(x).split(" ")))
+
+    # Group by name, and return the concatenated text, the sum of the word and the char count, and the number of tweets
+    df = df.groupby(['name'], as_index=False).agg({'organization': ['first'],
+                                                   'gender': ['first', 'size'],
+                                                   'retweet_count': ['sum', 'mean'],
+                                                   'favorite_count': ['sum', 'mean'],
+                                                   'word_count': ['sum', 'mean'],
+                                                   'char_count': ['sum', 'mean'],
+                                                   'text': [' '.join]})
+
+    # Replace column names
+    df.columns = list(map(''.join, df.columns.values))
+    df = df.rename(columns={'organizationfirst': 'organization',
+                            'genderfirst': 'gender',
+                            'gendersize': 'tweet_count',
+                            'retweet_countsum': 'retweet_count',
+                            'retweet_countmean': 'avg_retweet_count',
+                            'favorite_countsum': 'favorite_count',
+                            'favorite_countmean': 'avg_favorite_count',
+                            'word_countsum': 'word_count',
+                            'word_countmean': 'avg_word_count',
+                            'char_countsum': 'char_count',
+                            'char_countmean': 'avg_char_count',
+                            'textjoin': 'text'})
+
+    # Compute traffic and average traffic count
+    df['traffic_count'] = df['retweet_count'] + df['favorite_count']
+    df['avg_traffic_count'] = df['traffic_count'] / df['tweet_count']
+
+    return df
+
+# Organize the Politicians and Journalists dataframes
+Politicians = df_organizer(Politicians_raw)
+Journalists = df_organizer(Journalists_raw)
+
+# Add job column to both dataframes
+Politicians.insert(1, 'job', 'Politician')
+Journalists.insert(1, 'job', 'Journalist')
+
+# Concatenate both dataframes to the Political System (PS) dataframe
+PS = pd.concat([Politicians, Journalists]).reset_index(drop=True)
+
+# Visualize the average Favorites, Retweets and Traffic Counts for journalists and politicians
+
+# Traffic
+sns.catplot(x='avg_traffic_count',
+            y='name',
+            palette='ch:.25',
+            edgecolor='.6',
+            kind='bar',
+            data=PS.sort_values(by='avg_traffic_count', ascending=False).head(50))
+
+# Retweets
+sns.catplot(x='avg_retweet_count',
+            y='name',
+            palette='ch:.25',
+            edgecolor='.6',
+            kind='bar',
+            data=PS.sort_values(by='avg_retweet_count', ascending=False).head(50))
+
+# Favorites
+sns.catplot(x='avg_favorite_count',
+            y='name',
+            palette='ch:.25',
+            edgecolor='.6',
+            kind='bar',
+            data=PS.sort_values(by='avg_favorite_count', ascending=False).head(50))
 
 # Now, we'll create several dataframes with the groupby function, each of them grouping the tweets along
 # different aspect. This will allow us to create different wordclouds to analyze different aspects
-system_df = ' '.join(txt for txt in Tweets.text)
-politician_df = Tweets.groupby(['politician'], as_index=False).agg({'text': ' '.join})
-party_df = Tweets.groupby(['party'], as_index=False).agg({'text': ' '.join})
-
+system_str = ' '.join(PS['text'])
+male_str = ' '.join(PS['text'][PS['gender'] == 'Male'])
+female_str = ' '.join(PS['text'][PS['gender'] == 'Female'])
 
 # Creating the wordclouds
-# bidi_text = get_display(system_df)
-# wordcloud = WordCloud().generate(bidi_text)
-#
-# plt.imshow(wordcloud, interpolation='bilinear')
-# plt.axis("off")
-# plt.show()
+
+# Remove stopwords from the system string
+system_token = system_str.split()
+system_token = [word for word in system_token if word not in stopwords_lst]
+system_wc = ' '.join(system_token)
+
+bidi_text = get_display(system_wc)
+wordcloud = WordCloud(max_font_size=80,
+                      max_words=100,
+                      background_color='white',
+                      font_path=r'FreeSansBold.ttf').generate(bidi_text)
+
+# Present the wordcloud
+plt.imshow(wordcloud, interpolation='bilinear')
+plt.axis("off")
+plt.show()
+
+# Exporting the wordcloud
+wordcloud.to_file(r'Wordlocuds/name.png')
+
+# Word count function
+
+
+def word_count(str):
+    counts = dict()
+    words = str.split()
+    
+    # Count the words in the string
+    for word in words:
+        if word in counts:
+            counts[word] += 1
+        else:
+            counts[word] = 1
+    
+    # pass the word count to a sorted dataframe
+    df = pd.DataFrame({'word': list(counts.keys()),
+                       'count': list(counts.values())})
+    df = df.sort_values(by='count', ascending=False).reset_index(drop=True)
+
+    return df
+
+
+# Gender analysis
+male_count = word_count(male_str)
+female_count = word_count(female_str)
+male_tweets_num = len(PS[PS['gender'] == 'Male'])
+female_tweets_num = len(PS[PS['gender'] == 'Female'])
+
+# Merge
+gender_df = pd.merge(male_count,
+                     female_count,
+                     how='outer',
+                     on='word',
+                     suffixes=['_male', '_female'])
+
+# Assign nan values the value zero, beacuse they indicates zero use of these words
+gender_df = gender_df.fillna(0)
+
+# Drop Stopwords
+gender_df = gender_df[~gender_df['word'].isin(stopwords_lst)].reset_index(drop=True)
+
+# Normalize the word count to the number of tweets by male and female
+gender_df['count_male'] = gender_df['count_male']/male_tweets_num
+gender_df['count_female'] = gender_df['count_female']/female_tweets_num
+
+# Compute the differnce in the count of each word between males and females
+# A positive number indicates words that were used more frequently by females than by males.
+# A negative number indictaes the opposite
+gender_df['difference'] = gender_df['count_female'] - gender_df['count_male']
+
+# Sort dataframe by the difference column and reset index
+gender_df = gender_df.sort_values(by='difference', ascending=False).reset_index(drop=True)
+
+# Subset only the head and the tail of the dataframe, i.e, the values with largest difference in absolute values
+gender_df_disp = pd.concat([gender_df.head(20), gender_df.tail(20)])
+
+# Reverse hebrew words, for visualization purposes
+gender_df_disp['word'] = [get_display(word) for word in gender_df_disp['word']]
+
+# Visualize
+sns.catplot(x='difference',
+            y='word',
+            palette='ch:.25',
+            edgecolor='.6',
+            kind='bar',
+            data=gender_df_disp)
+
+# Organizations Analysis
+Organizations = PS.groupby(['organization'], as_index=False).agg({'job': ['first'],
+                                                                  'tweet_count': ['sum'],
+                                                                  'word_count': ['sum'],
+                                                                  'char_count': ['sum'],
+                                                                  'text': [' '.join]})
+
+Organizations.columns = list(map(''.join, Organizations.columns.values))
+Organizations = Organizations.rename(columns={'jobfirst': 'job',
+                                              'tweet_countsum': 'tweet_count',
+                                              'word_countsum': 'word_count',
+                                              'char_countsum': 'char_count',
+                                              'textjoin': 'text'})
+
+# Parties
+org_lst = []
+for organization in Organizations['organization']:
+    string = ' '.join(Organizations['text'][Organizations['organization'] == organization])
+    count = word_count(string)
+    count = count[~count['word'].isin(stopwords_lst)].reset_index(drop=True)
+    count.sort_values(by='count').reset_index(drop=True)
+    count = count.head(10)
+    count.insert(0, 'organization', organization)
+    org_lst.append(count)
+    
+organizations_df = pd.concat(org_lst)
+organizations_df_try = organizations_df[organizations_df['organization'].isin(['Haaretz', 'Makor_Rishon'])]
+organizations_df_try['word'] = [get_display(word) for word in organizations_df_try['word']]
+
+sns.catplot(x='count', y='word',
+            col='organization', aspect=.7,
+            kind='bar', data=organizations_df_try)
+
