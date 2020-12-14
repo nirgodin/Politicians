@@ -14,7 +14,7 @@ from Dictionaries import politicians_dct, journalists_dct, media_dct
 from Stopwords import stopwords_lst
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
-from googletrans import Translator
+from google_trans_new import google_translator
 # nltk.download('vader_lexicon')
 
 # Setting start and end date, to scrape tweets in between
@@ -27,6 +27,12 @@ endDate = datetime(2020, 12, 12, 00, 00, 00) # tzinfo=timezone('Israel')
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth, wait_on_rate_limit=True)
+
+# Set Google Translator
+translator = google_translator()
+
+# Set Vader's SentimentIntensityAnalyzer
+sid = SentimentIntensityAnalyzer()
 
 # Create a dataframe in which the tweets will be stored
 
@@ -83,7 +89,7 @@ def tweets_df(dct):
                                     5: 'retweet_count',
                                     6: 'favorite_count',
                                     7: 'text'})
-
+    
     return Tweets
 
 
@@ -102,13 +108,21 @@ Media_raw = tweets_df(media_dct)
 def df_organizer(df):  
     # Reset index
     df = df.reset_index(drop=True)
-    
+
     # Delete all urls from the strings, which are almost solely used to retweet, and 'rt' which indicates a Retweet
     try:
         df['text'] = [re.sub(r'http\S+', "", txt) for txt in df['text']]
         df['text'] = [re.sub(r'rt', "", txt) for txt in df['text']]
     except TypeError:
         pass
+
+    # Compute Sentiment, using vader and google translate
+    df['sentiment_dct'] = [sid.polarity_scores(translator.translate(txt)) for txt in df['text']]
+    df['negative'] = [df['sentiment_dct'][i]['neg'] for i in df.index.tolist()]
+    df['neutral'] = [df['sentiment_dct'][i]['neu'] for i in df.index.tolist()]
+    df['positive'] = [df['sentiment_dct'][i]['pos'] for i in df.index.tolist()]
+    df['compound'] = [df['sentiment_dct'][i]['compound'] for i in df.index.tolist()]
+    df = df.drop(columns='sentiment_dct')
 
     # Delete punctuation
     df['text'] = [re.sub(r'[^\w\s]', '', str(txt).lower().strip()) for txt in df['text']]
@@ -124,7 +138,11 @@ def df_organizer(df):
                                                    'favorite_count': ['sum', 'mean'],
                                                    'word_count': ['sum', 'mean'],
                                                    'char_count': ['sum', 'mean'],
-                                                   'text': [' '.join]})
+                                                   'text': [' '.join],
+                                                   'negative': ['mean'],
+                                                   'neutral': ['mean'],
+                                                   'positive': ['mean'],
+                                                   'compound': ['mean']})
 
     # Replace column names
     df.columns = list(map(''.join, df.columns.values))
@@ -139,7 +157,11 @@ def df_organizer(df):
                             'word_countmean': 'avg_word_count',
                             'char_countsum': 'char_count',
                             'char_countmean': 'avg_char_count',
-                            'textjoin': 'text'})
+                            'textjoin': 'text',
+                            'negativemean': 'negative',
+                            'neutralmean': 'neutral',
+                            'positivemean': 'positive',
+                            'compoundmean': 'compound'})
 
     # Compute traffic and average traffic count
     df['traffic_count'] = df['retweet_count'] + df['favorite_count']
@@ -151,6 +173,9 @@ def df_organizer(df):
 Politicians = df_organizer(Politicians_raw)
 Journalists = df_organizer(Journalists_raw)
 
+# Translate each row in the dataframe, analyze it's sentiment, and assign this to the sentiment column
+
+
 # Add job column to both dataframes
 Politicians.insert(1, 'job', 'Politician')
 Journalists.insert(1, 'job', 'Journalist')
@@ -161,12 +186,16 @@ PS = pd.concat([Politicians, Journalists]).reset_index(drop=True)
 # Visualize the average Favorites, Retweets and Traffic Counts for journalists and politicians
 
 # Traffic
-sns.catplot(x='avg_traffic_count',
-            y='name',
-            palette='ch:.25',
-            edgecolor='.6',
-            kind='bar',
-            data=PS.sort_values(by='avg_traffic_count', ascending=False).head(50))
+Traffic = sns.catplot(x='name',
+                      y='avg_traffic_count',
+                      palette='ch:.25',
+                      edgecolor='.6',
+                      kind='bar',
+                      col='job',
+                      data=PS.sort_values(by='avg_traffic_count', ascending=False).head(20),
+                      order=PS['name'])
+
+Traffic.set_xticklabels(rotation=90)
 
 # Retweets
 sns.catplot(x='avg_retweet_count',
@@ -174,6 +203,7 @@ sns.catplot(x='avg_retweet_count',
             palette='ch:.25',
             edgecolor='.6',
             kind='bar',
+            col='job',
             data=PS.sort_values(by='avg_retweet_count', ascending=False).head(50))
 
 # Favorites
@@ -182,6 +212,7 @@ sns.catplot(x='avg_favorite_count',
             palette='ch:.25',
             edgecolor='.6',
             kind='bar',
+            col='job',
             data=PS.sort_values(by='avg_favorite_count', ascending=False).head(50))
 
 # Now, we'll create several dataframes with the groupby function, each of them grouping the tweets along
