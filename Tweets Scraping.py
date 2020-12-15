@@ -5,22 +5,17 @@ from _datetime import datetime
 import _json
 import tweepy
 import re
-from wordcloud import WordCloud
-from matplotlib import pyplot as plt
-import seaborn as sns
-from bidi.algorithm import get_display
 from Credentials import consumer_key, consumer_secret, access_token, access_token_secret
 from Dictionaries import politicians_dct, journalists_dct, media_dct
-from Stopwords import stopwords_lst
-import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from google_trans_new import google_translator
+import nltk
 # nltk.download('vader_lexicon')
 
 # Setting start and end date, to scrape tweets in between
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
-startDate = datetime(2020, 12, 11, 00, 00, 00) # tzinfo=timezone('Israel')
-endDate = datetime(2020, 12, 12, 00, 00, 00) # tzinfo=timezone('Israel')
+startDate = datetime(2020, 12, 8, 00, 00, 00) # tzinfo=timezone('Israel')
+endDate = datetime(2020, 12, 15, 00, 00, 00) # tzinfo=timezone('Israel')
 
 # Setting the necessary twitter developer credentials to use the tweepy package and scrape tweets
 # These are set as environment variables
@@ -117,12 +112,12 @@ def df_organizer(df):
         pass
 
     # Compute Sentiment, using vader and google translate
-    df['sentiment_dct'] = [sid.polarity_scores(translator.translate(txt)) for txt in df['text']]
-    df['negative'] = [df['sentiment_dct'][i]['neg'] for i in df.index.tolist()]
-    df['neutral'] = [df['sentiment_dct'][i]['neu'] for i in df.index.tolist()]
-    df['positive'] = [df['sentiment_dct'][i]['pos'] for i in df.index.tolist()]
-    df['compound'] = [df['sentiment_dct'][i]['compound'] for i in df.index.tolist()]
-    df = df.drop(columns='sentiment_dct')
+    # df['sentiment_dct'] = [sid.polarity_scores(translator.translate(txt)) for txt in df['text']]
+    # df['negative'] = [df['sentiment_dct'][i]['neg'] for i in df.index.tolist()]
+    # df['neutral'] = [df['sentiment_dct'][i]['neu'] for i in df.index.tolist()]
+    # df['positive'] = [df['sentiment_dct'][i]['pos'] for i in df.index.tolist()]
+    # df['compound'] = [df['sentiment_dct'][i]['compound'] for i in df.index.tolist()]
+    # df = df.drop(columns='sentiment_dct')
 
     # Delete punctuation
     df['text'] = [re.sub(r'[^\w\s]', '', str(txt).lower().strip()) for txt in df['text']]
@@ -138,11 +133,11 @@ def df_organizer(df):
                                                    'favorite_count': ['sum', 'mean'],
                                                    'word_count': ['sum', 'mean'],
                                                    'char_count': ['sum', 'mean'],
-                                                   'text': [' '.join],
-                                                   'negative': ['mean'],
-                                                   'neutral': ['mean'],
-                                                   'positive': ['mean'],
-                                                   'compound': ['mean']})
+                                                   'text': [' '.join]})
+                                                   # 'negative': ['mean'],
+                                                   # 'neutral': ['mean'],
+                                                   # 'positive': ['mean'],
+                                                   # 'compound': ['mean']
 
     # Replace column names
     df.columns = list(map(''.join, df.columns.values))
@@ -157,11 +152,11 @@ def df_organizer(df):
                             'word_countmean': 'avg_word_count',
                             'char_countsum': 'char_count',
                             'char_countmean': 'avg_char_count',
-                            'textjoin': 'text',
-                            'negativemean': 'negative',
-                            'neutralmean': 'neutral',
-                            'positivemean': 'positive',
-                            'compoundmean': 'compound'})
+                            'textjoin': 'text'})
+                            # 'negativemean': 'negative',
+                            # 'neutralmean': 'neutral',
+                            # 'positivemean': 'positive',
+                            # 'compoundmean': 'compound'
 
     # Compute traffic and average traffic count
     df['traffic_count'] = df['retweet_count'] + df['favorite_count']
@@ -182,163 +177,3 @@ Journalists.insert(1, 'job', 'Journalist')
 
 # Concatenate both dataframes to the Political System (PS) dataframe
 PS = pd.concat([Politicians, Journalists]).reset_index(drop=True)
-
-# Visualize the average Favorites, Retweets and Traffic Counts for journalists and politicians
-
-# Traffic
-Traffic = sns.catplot(x='name',
-                      y='avg_traffic_count',
-                      palette='ch:.25',
-                      edgecolor='.6',
-                      kind='bar',
-                      col='job',
-                      data=PS.sort_values(by='avg_traffic_count', ascending=False).head(20),
-                      order=PS['name'])
-
-Traffic.set_xticklabels(rotation=90)
-
-# Retweets
-sns.catplot(x='avg_retweet_count',
-            y='name',
-            palette='ch:.25',
-            edgecolor='.6',
-            kind='bar',
-            col='job',
-            data=PS.sort_values(by='avg_retweet_count', ascending=False).head(50))
-
-# Favorites
-sns.catplot(x='avg_favorite_count',
-            y='name',
-            palette='ch:.25',
-            edgecolor='.6',
-            kind='bar',
-            col='job',
-            data=PS.sort_values(by='avg_favorite_count', ascending=False).head(50))
-
-# Now, we'll create several dataframes with the groupby function, each of them grouping the tweets along
-# different aspect. This will allow us to create different wordclouds to analyze different aspects
-system_str = ' '.join(PS['text'])
-male_str = ' '.join(PS['text'][PS['gender'] == 'Male'])
-female_str = ' '.join(PS['text'][PS['gender'] == 'Female'])
-
-# Creating the wordclouds
-
-# Remove stopwords from the system string
-system_token = system_str.split()
-system_token = [word for word in system_token if word not in stopwords_lst]
-system_wc = ' '.join(system_token)
-
-bidi_text = get_display(system_wc)
-wordcloud = WordCloud(max_font_size=80,
-                      max_words=100,
-                      background_color='white',
-                      font_path=r'FreeSansBold.ttf').generate(bidi_text)
-
-# Present the wordcloud
-plt.imshow(wordcloud, interpolation='bilinear')
-plt.axis("off")
-plt.show()
-
-# Exporting the wordcloud
-wordcloud.to_file(r'Wordlocuds/name.png')
-
-# Word count function
-
-
-def word_count(str):
-    counts = dict()
-    words = str.split()
-    
-    # Count the words in the string
-    for word in words:
-        if word in counts:
-            counts[word] += 1
-        else:
-            counts[word] = 1
-    
-    # pass the word count to a sorted dataframe
-    df = pd.DataFrame({'word': list(counts.keys()),
-                       'count': list(counts.values())})
-    df = df.sort_values(by='count', ascending=False).reset_index(drop=True)
-
-    return df
-
-
-# Gender analysis
-male_count = word_count(male_str)
-female_count = word_count(female_str)
-male_tweets_num = len(PS[PS['gender'] == 'Male'])
-female_tweets_num = len(PS[PS['gender'] == 'Female'])
-
-# Merge
-gender_df = pd.merge(male_count,
-                     female_count,
-                     how='outer',
-                     on='word',
-                     suffixes=['_male', '_female'])
-
-# Assign nan values the value zero, beacuse they indicates zero use of these words
-gender_df = gender_df.fillna(0)
-
-# Drop Stopwords
-gender_df = gender_df[~gender_df['word'].isin(stopwords_lst)].reset_index(drop=True)
-
-# Normalize the word count to the number of tweets by male and female
-gender_df['count_male'] = gender_df['count_male']/male_tweets_num
-gender_df['count_female'] = gender_df['count_female']/female_tweets_num
-
-# Compute the differnce in the count of each word between males and females
-# A positive number indicates words that were used more frequently by females than by males.
-# A negative number indictaes the opposite
-gender_df['difference'] = gender_df['count_female'] - gender_df['count_male']
-
-# Sort dataframe by the difference column and reset index
-gender_df = gender_df.sort_values(by='difference', ascending=False).reset_index(drop=True)
-
-# Subset only the head and the tail of the dataframe, i.e, the values with largest difference in absolute values
-gender_df_disp = pd.concat([gender_df.head(20), gender_df.tail(20)])
-
-# Reverse hebrew words, for visualization purposes
-gender_df_disp['word'] = [get_display(word) for word in gender_df_disp['word']]
-
-# Visualize
-sns.catplot(x='difference',
-            y='word',
-            palette='ch:.25',
-            edgecolor='.6',
-            kind='bar',
-            data=gender_df_disp)
-
-# Organizations Analysis
-Organizations = PS.groupby(['organization'], as_index=False).agg({'job': ['first'],
-                                                                  'tweet_count': ['sum'],
-                                                                  'word_count': ['sum'],
-                                                                  'char_count': ['sum'],
-                                                                  'text': [' '.join]})
-
-Organizations.columns = list(map(''.join, Organizations.columns.values))
-Organizations = Organizations.rename(columns={'jobfirst': 'job',
-                                              'tweet_countsum': 'tweet_count',
-                                              'word_countsum': 'word_count',
-                                              'char_countsum': 'char_count',
-                                              'textjoin': 'text'})
-
-# Parties
-org_lst = []
-for organization in Organizations['organization']:
-    string = ' '.join(Organizations['text'][Organizations['organization'] == organization])
-    count = word_count(string)
-    count = count[~count['word'].isin(stopwords_lst)].reset_index(drop=True)
-    count.sort_values(by='count').reset_index(drop=True)
-    count = count.head(10)
-    count.insert(0, 'organization', organization)
-    org_lst.append(count)
-    
-organizations_df = pd.concat(org_lst)
-organizations_df_try = organizations_df[organizations_df['organization'].isin(['Haaretz', 'Makor_Rishon'])]
-organizations_df_try['word'] = [get_display(word) for word in organizations_df_try['word']]
-
-sns.catplot(x='count', y='word',
-            col='organization', aspect=.7,
-            kind='bar', data=organizations_df_try)
-
