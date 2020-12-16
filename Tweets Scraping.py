@@ -9,13 +9,15 @@ from Credentials import consumer_key, consumer_secret, access_token, access_toke
 from Dictionaries import politicians_dct, journalists_dct, media_dct
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from google_trans_new import google_translator
+from bidi.algorithm import get_display
 import nltk
 # nltk.download('vader_lexicon')
 
-# Setting start and end date, to scrape tweets in between
+# Setting start and end date, to scrape tweets in between. Also, setting week number for data export and import
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
 startDate = datetime(2020, 12, 8, 00, 00, 00) # tzinfo=timezone('Israel')
 endDate = datetime(2020, 12, 15, 00, 00, 00) # tzinfo=timezone('Israel')
+week = '1'
 
 # Setting the necessary twitter developer credentials to use the tweepy package and scrape tweets
 # These are set as environment variables
@@ -94,9 +96,8 @@ Media_raw = tweets_df(media_dct)
 
 
 # Export the raw dataframes to the Raw folder
-# printDate = str(endDate).split()[0].replace('2020-', '')
-# Politicians.to_csv(r'Data\Raw\Politicians\Politicians_' + printDate + '.csv')
-# Journalists.to_csv(r'Data\Raw\Journalists\Journalists_' + printDate + '.csv')
+# Politicians_raw.to_csv(r'Data\Raw\Politicians\Politicians_' + printDate + '.csv')
+# Journalists_raw.to_csv(r'Data\Raw\Journalists\Journalists_' + printDate + '.csv')
 
 
 # Dataframe organizer function
@@ -162,14 +163,14 @@ def df_organizer(df):
     df['traffic_count'] = df['retweet_count'] + df['favorite_count']
     df['avg_traffic_count'] = df['traffic_count'] / df['tweet_count']
 
+    # Insert hebrew name column and apply the get display function on it
+    PS['hebrew_name'] = PS['name'].map(lambda x: get_display(politicians_dct[x][3]))
+
     return df
 
 # Organize the Politicians and Journalists dataframes
 Politicians = df_organizer(Politicians_raw)
 Journalists = df_organizer(Journalists_raw)
-
-# Translate each row in the dataframe, analyze it's sentiment, and assign this to the sentiment column
-
 
 # Add job column to both dataframes
 Politicians.insert(1, 'job', 'Politician')
@@ -177,3 +178,8 @@ Journalists.insert(1, 'job', 'Journalist')
 
 # Concatenate both dataframes to the Political System (PS) dataframe
 PS = pd.concat([Politicians, Journalists]).reset_index(drop=True)
+
+# Export dataframe
+PS.to_csv(r'Data\Organized\Week' + week + '.csv', index=False)
+
+

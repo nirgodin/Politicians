@@ -87,8 +87,12 @@ stopwords_manually = ['אני',
                       'וזה',
                       'ה',
                       'אותה',
+                      'אותי',
                       'מחר',
-                      'דבר']
+                      'דבר',
+                      'שזה',
+                      'שנה',
+                      'שם']
 
 stopwords_lst = stopwords_lst + stopwords_manually
 
