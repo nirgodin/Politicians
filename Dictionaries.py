@@ -102,44 +102,39 @@ politicians_dct = {'Abou-Shahadeh': ['ShahadehAbou', 'Meshutefet', 'Male', 'אב
                    'Touma-Sliman': ['AidaTuma', 'Meshutefet', 'Female', 'תומא-סלימאן'],
                    'Tamano-Shata': ['pnina_tamano_sh', 'Kachol_Lavan', 'Female', 'תמנו-שטה']}
 
-politicians_df = pd.DataFrame.from_dict(politicians_dct, orient='index', columns=['username',
-                                                                                  'organization',
-                                                                                  'gender'])
 
-politicians_df['job'] = 'Politician'
+parties_dct = {'Likud': ['Likud_Party', 'Likud', np.nan, 'ליכוד'],
+               'Kachol_Lavan': ['Kachollavan19', 'Kachol_Lavan', np.nan, 'כחול לבן'],
+               'Israel_Beytenu': ['Beytenu', 'Israel_Beytenu', np.nan, 'ישראל ביתנו'],
+               'Yesh_Atid': ['YeshAtidParty', 'Yesh_Atid', np.nan, 'יש עתיד'],
+               'Meretz': ['meretzparty', 'Meretz', np.nan, 'מרץ'],
+               'Avoda': ['HavodaParty', 'Avoda', np.nan, 'העבודה'],
+               'Bait_Yehudi': ['RealBaitYehudi', 'Bait_Yehudi', np.nan, 'הבית היהודי'],
+               'Yamina': ['yeminaparty', 'Yamina', np.nan, 'ימינה'],
+               'Derech_Eretz': ['dereheretz', 'Derech_Eretz', np.nan, 'דרך ארץ'],
+               'Gesher': ['GesherParty', 'Gesher', np.nan, 'גשר']}
 
-party_dct = {'Likud': ['Likud_Party', np.nan, np.nan],
-             'Kachol_Lavan': ['Kachollavan19', np.nan, np.nan],
-             'Israel_Beytenu': ['Beytenu', np.nan, np.nan],
-             'Yesh_Atid': ['YeshAtidParty', np.nan, np.nan],
-             'Meretz': ['meretzparty', np.nan, np.nan],
-             'Avoda': ['HavodaParty', np.nan, np.nan],
-             'Bait_Yehudi': ['RealBaitYehudi', np.nan, np.nan],
-             'Yamina': ['yeminaparty', np.nan, np.nan],
-             'Derech_Eretz': ['dereheretz', np.nan, np.nan],
-             'Gesher': ['GesherParty', np.nan, np.nan]}
-
-media_dct = {'Haaretz': ['Haaretz', np.nan, np.nan],
-             'The_Marker': ['TheMarker', np.nan, np.nan],
-             'Yediot': ['YediotAhronot', np.nan, np.nan],
-             'Calcalist': ['calcalist', np.nan, np.nan],
-             'Globes': ['globesnews', np.nan, np.nan],
-             'Israel_Hayom': ['IsraelHayomHeb', np.nan, np.nan],
-             'Maariv': ['MaarivOnline', np.nan, np.nan],
-             'Makor_Rishon': ['MakorRishon', np.nan, np.nan],
-             'Ynet' : ['ynetalerts', np.nan, np.nan],
-             'Walla': ['WallaNews', np.nan, np.nan],
-             'Mida': ['MidaWebsite', np.nan, np.nan],
-             '7_Eye': ['the7i', np.nan, np.nan],
-             'N12': ['N12News', np.nan, np.nan],
-             'Reshet': ['Reshettv', np.nan, np.nan],
-             'Kann': ['kann_news', np.nan, np.nan],
-             'Arutz_20': ['arutz20', np.nan, np.nan],
-             'Arutz_7': ['arutz7heb', np.nan, np.nan],
-             'Knesset': ['KnessetT', np.nan, np.nan],
-             'GLZ': ['GLZRadio', np.nan, np.nan],
-             'Reshet_Bet': ['ReshetBet', np.nan, np.nan],
-             '103FM': ['radio103fm', np.nan, np.nan]}
+media_dct = {'Haaretz': ['Haaretz', np.nan, np.nan, 'הארץ'],
+             'The_Marker': ['TheMarker', np.nan, np.nan, 'The Marker'],
+             'Yediot': ['YediotAhronot', np.nan, np.nan, 'ידיעות אחרונות'],
+             'Calcalist': ['calcalist', np.nan, np.nan, 'כלכליסט'],
+             'Globes': ['globesnews', np.nan, np.nan, 'גלובס'],
+             'Israel_Hayom': ['IsraelHayomHeb', np.nan, np.nan, 'ישראל היום'],
+             'Maariv': ['MaarivOnline', np.nan, np.nan, 'מעריב'],
+             'Makor_Rishon': ['MakorRishon', np.nan, np.nan, 'מקור ראשון'],
+             'Ynet' : ['ynetalerts', np.nan, np.nan, 'Ynet'],
+             'Walla': ['WallaNews', np.nan, np.nan, 'וואלה'],
+             'Mida': ['MidaWebsite', np.nan, np.nan, 'מידה'],
+             '7_Eye': ['the7i', np.nan, np.nan, 'העין השביעית'],
+             'N12': ['N12News', np.nan, np.nan, 'N12'],
+             'Reshet': ['Reshettv', np.nan, np.nan, 'רשת'],
+             'Kann': ['kann_news', np.nan, np.nan, 'כאן'],
+             'Arutz_20': ['arutz20', np.nan, np.nan, 'ערוץ 20'],
+             'Arutz_7': ['arutz7heb', np.nan, np.nan, 'ערוץ 7'],
+             'Knesset': ['KnessetT', np.nan, np.nan, 'ערוץ הכנסת'],
+             'GLZ': ['GLZRadio', np.nan, np.nan, 'גלצ'],
+             'Reshet_Bet': ['ReshetBet', np.nan, np.nan, 'רשת ב'],
+             '103FM': ['radio103fm', np.nan, np.nan, '103FM']}
 
 journalists_dct = {'Weiss': ['danawt', 'N12', 'Female', 'דנה וייס'],        # N12
                    'Segal_Amit': ['amit_segal', 'N12', 'Male', 'עמית סגל'],
@@ -241,14 +236,3 @@ journalists_dct = {'Weiss': ['danawt', 'N12', 'Female', 'דנה וייס'],     
                    'Azulay': ['moran_ynet', 'Ynet', 'Female', 'מורן אזולאי']}
 
 
-# journalists_df = pd.DataFrame.from_dict(journalists_dct, orient='index', columns=['username',
-#                                                                                   'organization',
-#                                                                                   'gender'])
-#
-# journalists_df['job'] = 'Journalist'
-#
-# politicians_df.to_csv('Politicians List.csv', index_label='name')
-# journalists_df.to_csv('Journalists List.csv', index_label='name')
-#
-# journalists_df['Segal_Amit',:]
-#

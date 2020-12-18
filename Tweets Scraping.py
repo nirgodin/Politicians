@@ -6,7 +6,7 @@ import _json
 import tweepy
 import re
 from Credentials import consumer_key, consumer_secret, access_token, access_token_secret
-from Dictionaries import politicians_dct, journalists_dct, media_dct
+from Dictionaries import politicians_dct, journalists_dct, media_dct, parties_dct
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from google_trans_new import google_translator
 from bidi.algorithm import get_display
@@ -15,8 +15,8 @@ import nltk
 
 # Setting start and end date, to scrape tweets in between. Also, setting week number for data export and import
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
-startDate = datetime(2020, 12, 8, 00, 00, 00) # tzinfo=timezone('Israel')
-endDate = datetime(2020, 12, 15, 00, 00, 00) # tzinfo=timezone('Israel')
+startDate = datetime(2020, 12, 16, 00, 00, 00) # tzinfo=timezone('Israel')
+endDate = datetime(2020, 12, 17, 00, 00, 00) # tzinfo=timezone('Israel')
 week = '1'
 
 # Setting the necessary twitter developer credentials to use the tweepy package and scrape tweets
@@ -31,7 +31,6 @@ translator = google_translator()
 # Set Vader's SentimentIntensityAnalyzer
 sid = SentimentIntensityAnalyzer()
 
-# Create a dataframe in which the tweets will be stored
 
 # Iterate through the politicians twitter users and scrape each user tweets
 # Code credit to Alexander Psiuk at https://gist.github.com/alexdeloy
@@ -57,6 +56,7 @@ def tweets_df(dct):
             tweets_list = [[user,
                             dct[user][1],
                             dct[user][2],
+                            dct[user][3],
                             tweet.created_at,
                             tweet.id,
                             # tweet._json['quote_count'],
@@ -81,70 +81,88 @@ def tweets_df(dct):
     Tweets = Tweets.rename(columns={0: 'name',
                                     1: 'organization',
                                     2: 'gender',
-                                    3: 'created_at',
-                                    4: 'id',
-                                    5: 'retweet_count',
-                                    6: 'favorite_count',
-                                    7: 'text'})
+                                    3: 'hebrew_name',
+                                    4: 'created_at',
+                                    5: 'id',
+                                    6: 'retweet_count',
+                                    7: 'favorite_count',
+                                    8: 'text'})
     
     return Tweets
 
 
-Politicians_raw = tweets_df(politicians_dct)
-Journalists_raw = tweets_df(journalists_dct)
-Media_raw = tweets_df(media_dct)
+# Create four dataframes, for the four types of twitter figures - Politicians, Journalists, Media and Parties
+Politicians = tweets_df(politicians_dct)
+Journalists = tweets_df(journalists_dct)
+Media = tweets_df(media_dct)
+Parties = tweets_df(parties_dct)
+
+# Add job column to all dataframes
+Politicians.insert(1, 'job', 'Politician')
+Journalists.insert(1, 'job', 'Journalist')
+Media.insert(1, 'job', 'Media')
+Parties.insert(1, 'job', 'Party')
+
+# Concatenate the dataframes to the Political System (PS) dataframe
+PS_raw = pd.concat([Politicians, Journalists, Media, Parties]).reset_index(drop=True)
+
+# Export the raw dataframe to the Raw folder
+PS_raw.to_csv(r'Data\Raw\Week_' + week + '.csv')
 
 
-# Export the raw dataframes to the Raw folder
-# Politicians_raw.to_csv(r'Data\Raw\Politicians\Politicians_' + printDate + '.csv')
-# Journalists_raw.to_csv(r'Data\Raw\Journalists\Journalists_' + printDate + '.csv')
+# Sentiment function
+def df_sentiment(df):
 
-
-# Dataframe organizer function
-def df_organizer(df):  
     # Reset index
     df = df.reset_index(drop=True)
 
     # Delete all urls from the strings, which are almost solely used to retweet, and 'rt' which indicates a Retweet
-    try:
-        df['text'] = [re.sub(r'http\S+', "", txt) for txt in df['text']]
-        df['text'] = [re.sub(r'rt', "", txt) for txt in df['text']]
-    except TypeError:
-        pass
-
-    # Compute Sentiment, using vader and google translate
-    # df['sentiment_dct'] = [sid.polarity_scores(translator.translate(txt)) for txt in df['text']]
-    # df['negative'] = [df['sentiment_dct'][i]['neg'] for i in df.index.tolist()]
-    # df['neutral'] = [df['sentiment_dct'][i]['neu'] for i in df.index.tolist()]
-    # df['positive'] = [df['sentiment_dct'][i]['pos'] for i in df.index.tolist()]
-    # df['compound'] = [df['sentiment_dct'][i]['compound'] for i in df.index.tolist()]
-    # df = df.drop(columns='sentiment_dct')
+    df['text'] = [re.sub(r'http\S+', "", txt) for txt in df['text']]
+    df['text'] = [re.sub(r'rt', "", txt) for txt in df['text']]
 
     # Delete punctuation
     df['text'] = [re.sub(r'[^\w\s]', '', str(txt).lower().strip()) for txt in df['text']]
+
+    # Compute Sentiment, using vader and google translate
+    df['sentiment_dct'] = [sid.polarity_scores(translator.translate(txt)) for txt in df['text']]
+    df['negative'] = [df['sentiment_dct'][i]['neg'] for i in df.index.tolist()]
+    df['neutral'] = [df['sentiment_dct'][i]['neu'] for i in df.index.tolist()]
+    df['positive'] = [df['sentiment_dct'][i]['pos'] for i in df.index.tolist()]
+    df['compound'] = [df['sentiment_dct'][i]['compound'] for i in df.index.tolist()]
+    df = df.drop(columns='sentiment_dct')
+
+    return df
+
+
+# Dataframe organizer function
+def df_organizer(df):
 
     # Insert word and character count columns
     df['word_count'] = df['text'].apply(lambda x: len(str(x).split(" ")))
     df['char_count'] = df['text'].apply(lambda x: sum(len(word) for word in str(x).split(" ")))
 
     # Group by name, and return the concatenated text, the sum of the word and the char count, and the number of tweets
-    df = df.groupby(['name'], as_index=False).agg({'organization': ['first'],
+    df = df.groupby(['name'], as_index=False).agg({'job': ['first'],
+                                                   'organization': ['first'],
                                                    'gender': ['first', 'size'],
+                                                   'hebrew_name': ['first'],
                                                    'retweet_count': ['sum', 'mean'],
                                                    'favorite_count': ['sum', 'mean'],
                                                    'word_count': ['sum', 'mean'],
                                                    'char_count': ['sum', 'mean'],
+                                                   'negative': ['mean'],
+                                                   'neutral': ['mean'],
+                                                   'positive': ['mean'],
+                                                   'compound': ['mean'],
                                                    'text': [' '.join]})
-                                                   # 'negative': ['mean'],
-                                                   # 'neutral': ['mean'],
-                                                   # 'positive': ['mean'],
-                                                   # 'compound': ['mean']
 
     # Replace column names
     df.columns = list(map(''.join, df.columns.values))
-    df = df.rename(columns={'organizationfirst': 'organization',
+    df = df.rename(columns={'jobfirst': 'job',
+                            'organizationfirst': 'organization',
                             'genderfirst': 'gender',
                             'gendersize': 'tweet_count',
+                            'hebrew_namefirst': 'hebrew_name',
                             'retweet_countsum': 'retweet_count',
                             'retweet_countmean': 'avg_retweet_count',
                             'favorite_countsum': 'favorite_count',
@@ -153,33 +171,39 @@ def df_organizer(df):
                             'word_countmean': 'avg_word_count',
                             'char_countsum': 'char_count',
                             'char_countmean': 'avg_char_count',
+                            'negativemean': 'negative',
+                            'neutralmean': 'neutral',
+                            'positivemean': 'positive',
+                            'compoundmean': 'compound',
                             'textjoin': 'text'})
-                            # 'negativemean': 'negative',
-                            # 'neutralmean': 'neutral',
-                            # 'positivemean': 'positive',
-                            # 'compoundmean': 'compound'
 
     # Compute traffic and average traffic count
     df['traffic_count'] = df['retweet_count'] + df['favorite_count']
     df['avg_traffic_count'] = df['traffic_count'] / df['tweet_count']
 
-    # Insert hebrew name column and apply the get display function on it
-    PS['hebrew_name'] = PS['name'].map(lambda x: get_display(politicians_dct[x][3]))
+    # Apply the get_display function on all the hebew names in the dataframe
+    df['hebrew_name'] = [get_display(df['hebrew_name'][i]) for i in df.index.tolist()]
+
+    # Drop rows with null text
+    df = df[df['text'] != ''] 
 
     return df
 
-# Organize the Politicians and Journalists dataframes
-Politicians = df_organizer(Politicians_raw)
-Journalists = df_organizer(Journalists_raw)
 
-# Add job column to both dataframes
-Politicians.insert(1, 'job', 'Politician')
-Journalists.insert(1, 'job', 'Journalist')
 
-# Concatenate both dataframes to the Political System (PS) dataframe
-PS = pd.concat([Politicians, Journalists]).reset_index(drop=True)
+
+# Compute sentiment and export
+PS_sentiment = df_sentiment(PS_raw)
+
+# Export the sentiment dataframe
+PS_sentiment.to_csv(r'Data\Sentiment\Week' + week + '.csv', index=False)
+
+# Organize the dataframe to final analysis and visualization
+PS = df_organizer(PS_sentiment)
 
 # Export dataframe
 PS.to_csv(r'Data\Organized\Week' + week + '.csv', index=False)
 
 
+
+PS.iloc[59]['text']
