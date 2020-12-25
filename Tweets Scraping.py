@@ -15,8 +15,9 @@ import nltk
 
 # Setting start and end date, to scrape tweets in between. Also, setting week number for data export and import
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
-startDate = datetime(2020, 12, 16, 00, 00, 00) # tzinfo=timezone('Israel')
-endDate = datetime(2020, 12, 17, 00, 00, 00) # tzinfo=timezone('Israel')
+startDate = datetime(2020, 12, 18)
+endDate = datetime(2020, 12, 25)
+printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 week = '1'
 
 # Setting the necessary twitter developer credentials to use the tweepy package and scrape tweets
@@ -107,7 +108,7 @@ Parties.insert(1, 'job', 'Party')
 PS_raw = pd.concat([Politicians, Journalists, Media, Parties]).reset_index(drop=True)
 
 # Export the raw dataframe to the Raw folder
-PS_raw.to_csv(r'Data\Raw\Week_' + week + '.csv')
+PS_raw.to_csv(r'Data\Raw' + '\\' + printDate + '.csv')
 
 
 # Sentiment function
@@ -196,14 +197,11 @@ def df_organizer(df):
 PS_sentiment = df_sentiment(PS_raw)
 
 # Export the sentiment dataframe
-PS_sentiment.to_csv(r'Data\Sentiment\Week' + week + '.csv', index=False)
+PS_sentiment.to_csv(r'Data\Sentiment' + '\\' + printDate + '.csv', index=False)
 
 # Organize the dataframe to final analysis and visualization
 PS = df_organizer(PS_sentiment)
 
 # Export dataframe
-PS.to_csv(r'Data\Organized\Week' + week + '.csv', index=False)
+PS.to_csv(r'Data\Organized' + '\\' + printDate + '.csv', index=False)
 
-
-
-PS.iloc[59]['text']

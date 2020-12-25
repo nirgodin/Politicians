@@ -1,15 +1,18 @@
 import pandas as pd
+from _datetime import datetime
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
+from matplotlib.figure import Figure
 import seaborn as sns
 from bidi.algorithm import get_display
 from Stopwords import stopwords_lst
 
-# Week number
+# Week number and print data
 week = '1'
+printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 
 # Import data
-PS = pd.read_csv(r'Data\Organized\Week' + week + '.csv')
+PS = pd.read_csv(r'Data\Organized' + '\\' + printDate + '.csv')
 
 # Defining few functions that will be relevant for the visualizations
 # First function takes a sorted dataframe and returns only the head and the tail of it, with the specified num. of rows
@@ -72,6 +75,7 @@ Organizations = Organizations.rename(columns={'jobfirst': 'job',
                                               'compoundmean': 'compound',
                                               'textjoin': 'text'})
 
+
 ##################################################     WORDCLOUD     ##################################################
 
 
@@ -89,8 +93,10 @@ bidi_text = get_display(system_wc)
 
 # Generate the wordcloud
 wordcloud = WordCloud(max_font_size=80,
-                      max_words=100,
+                      max_words=80,
                       background_color='white',
+                      width=600,
+                      height=335,
                       font_path=r'FreeSansBold.ttf').generate(bidi_text)
 
 # Present the wordcloud
@@ -99,7 +105,7 @@ plt.axis("off")
 plt.show()
 
 # Exporting the wordcloud
-wordcloud.savefig(r'Visualizations\Wordclouds\Wordcloud_' + week + '.png')
+wordcloud.to_file(r'Visualizations\Wordclouds\Wordcloud ' + printDate + '.png')
 
 
 ################################################      TWEETS COUNT      ################################################
@@ -107,6 +113,7 @@ wordcloud.savefig(r'Visualizations\Wordclouds\Wordcloud_' + week + '.png')
 
 # Set plotting area
 twt_fig, twt_ax = plt.subplots(1, 2)
+twt_fig.set_size_inches(6, 3.35)
 
 # Plot journalist figure
 j_twt_fig = sns.barplot(x='tweet_count',
@@ -141,6 +148,9 @@ twt_fig.suptitle(get_display('הצייצנים הפעילים ביותר'), font
 
 # Show the tweet count figure
 twt_fig.show(twt_ax)
+
+# Export the tweet count figure
+twt_fig.savefig(r'Visualizations\Tweets\Tweets ' + printDate + '.png')
 
 
 #################################################      FAVORITES      #################################################
@@ -180,7 +190,7 @@ for i in range(0, 2):
     fav_ax[i].set_ylabel('')
 
 # Set main title to the whole figure
-fav_fig.suptitle(get_display('הצייצנים עם מספר הפברוטים הממוצע הגבוה ביותר'), fontsize=16)
+fav_fig.suptitle(get_display('הצייצנים עם מספר הפברוטים הגבוה ביותר'), fontsize=16)
 
 # Show the favorites figure
 fav_fig.show(fav_ax)
@@ -227,8 +237,8 @@ rt_fig.suptitle(get_display('הצייצנים עם מספר הריטוויטים
 rt_fig.show(rt_ax)
 
 # Save figures
-fav_fig.savefig(r'Visualizations\Favorites\Favorites_' + week + '.png')
-rt_fig.savefig(r'Visualizations\Retweets\Retweets_' + week + '.png')
+fav_fig.savefig(r'Visualizations\Favorites\Favorites ' + printDate + '.png')
+rt_fig.savefig(r'Visualizations\Retweets\Retweets ' + printDate + '.png')
 
 
 #############################################      SENTIMENT - PEOPLE      #############################################
@@ -239,12 +249,12 @@ sentiment_ppl_fig, sentiment_ppl_ax = plt.subplots(1, 2)
 
 # Plot journalist figure
 j_sentiment_ppl_fig = sns.barplot(x='compound',
-                              y='hebrew_name',
-                              palette='ch:.25',
-                              edgecolor='.6',
-                              ax=sentiment_ppl_ax[0],
-                              data=head_and_tail(PS[PS['job'] == 'Journalist'].sort_values(by='compound',
-                                                                                           ascending=False)))
+                                  y='hebrew_name',
+                                  palette='ch:.25',
+                                  edgecolor='.6',
+                                  ax=sentiment_ppl_ax[0],
+                                  data=head_and_tail(PS[PS['job'] == 'Journalist'].sort_values(by='compound',
+                                                                                               ascending=False)))
 
 # Set title to journalist figure
 j_sentiment_ppl_fig.set_title(get_display('עיתונאים'), fontsize=14)
@@ -270,47 +280,6 @@ sentiment_ppl_fig.suptitle(get_display('הצייצנים עם הציוצים ה�
 
 # Show the retweets figure
 sentiment_ppl_fig.show(sentiment_ppl_ax)
-
-
-#########################################      SENTIMENT - ORGANIZATIONS      #########################################
-
-
-# Set plotting area
-sentiment_org_fig, sentiment_org_ax = plt.subplots(1, 2)
-
-# Plot journalist figure
-j_sentiment_org_fig = sns.barplot(x='compound',
-                                  y='organization',
-                                  palette='ch:.25',
-                                  edgecolor='.6',
-                                  ax=sentiment_org_ax[0],
-                                  data=head_and_tail(Organizations[Organizations['job'] == 'Journalist'].sort_values(by='compound',
-                                                                                                                     ascending=False)))
-
-# Set title to journalist figure
-j_sentiment_org_fig.set_title(get_display('כלי תקשורת'), fontsize=14)
-
-p_sentiment_org_fig = sns.barplot(x='compound',
-                                  y='organization',
-                                  palette='ch:.25',
-                                  edgecolor='.6',
-                                  ax=sentiment_org_ax[1],
-                                  data=head_and_tail(Organizations[Organizations['job'] == 'Politician'].sort_values(by='compound',
-                                                                                                                     ascending=False)))
-
-# Set title to politicians figure
-p_sentiment_org_fig.set_title(get_display('מפלגות'), fontsize=14)
-
-# Delete subplots axes titles
-for i in range(0, 2):
-    sentiment_org_ax[i].set_xlabel('')
-    sentiment_org_ax[i].set_ylabel('')
-
-# Set main title to the whole figure
-sentiment_org_fig.suptitle(get_display('כלי התקשורת והמפלגות עם הציוצים החיוביים ביותר והשליליים ביותר'), fontsize=16)
-
-# Show the retweets figure
-sentiment_org_fig.show(sentiment_org_ax)
 
 
 #######################################       GENDER - WORD USE DIFFERENCE       #######################################
@@ -349,13 +318,13 @@ gender_df['count_female'] = gender_df['count_female'] / female_twt_count
 gender_df['difference'] = gender_df['count_female'] - gender_df['count_male']
 
 # Visualize
-gender_word_differnce = sns.catplot(x='difference',
-                                    y='word',
-                                    palette='ch:.25',
-                                    edgecolor='.6',
-                                    kind='bar',
-                                    data=head_and_tail(gender_df.sort_values(by='difference',
-                                                                             ascending=False).reset_index(drop=True)))
+gen_word_diff = sns.catplot(x='difference',
+                            y='word',
+                            palette='ch:.25',
+                            edgecolor='.6',
+                            kind='bar',
+                            data=head_and_tail(gender_df.sort_values(by='difference',
+                                                                     ascending=False).reset_index(drop=True)))
 
 
 ########################################       GENDER - TRAFFIC ANALYSIS       ########################################
@@ -424,7 +393,19 @@ sns.boxplot(x='job',
 gen_fig_words.show(gen_ax_words)
 
 
-###############################################       ORGANIZATION       ###############################################
+#######################################       GENDER - SENTIMENT ANALYSIS       #######################################
+
+
+# Gender char count boxplot
+gen_fig_snt = sns.boxplot(x='job',
+                          y='compound',
+                          palette='Set3',
+                          hue='gender',
+                          showfliers=False,
+                          data=PS[PS['job'].isin(['Journalist', 'Politician'])])
+
+
+##############################################       ORGANIZATIONS       ##############################################
 
 
 # Organizations Analysis
@@ -524,3 +505,44 @@ sns.boxplot(x='job',
             hue='organization',
             showfliers=False,
             data=PS[PS['job'] == 'Journalist'])
+
+
+#####################################      ORGANIZATIONS - SENTIMENT ANALYSIS      #####################################
+
+
+# Set plotting area
+sentiment_org_fig, sentiment_org_ax = plt.subplots(1, 2)
+
+# Plot journalist figure
+j_sentiment_org_fig = sns.barplot(x='compound',
+                                  y='organization',
+                                  palette='ch:.25',
+                                  edgecolor='.6',
+                                  ax=sentiment_org_ax[0],
+                                  data=head_and_tail(Organizations[Organizations['job'] == 'Journalist'].sort_values(by='compound',
+                                                                                                                     ascending=False)))
+
+# Set title to journalist figure
+j_sentiment_org_fig.set_title(get_display('כלי תקשורת'), fontsize=14)
+
+p_sentiment_org_fig = sns.barplot(x='compound',
+                                  y='organization',
+                                  palette='ch:.25',
+                                  edgecolor='.6',
+                                  ax=sentiment_org_ax[1],
+                                  data=head_and_tail(Organizations[Organizations['job'] == 'Politician'].sort_values(by='compound',
+                                                                                                                     ascending=False)))
+
+# Set title to politicians figure
+p_sentiment_org_fig.set_title(get_display('מפלגות'), fontsize=14)
+
+# Delete subplots axes titles
+for i in range(0, 2):
+    sentiment_org_ax[i].set_xlabel('')
+    sentiment_org_ax[i].set_ylabel('')
+
+# Set main title to the whole figure
+sentiment_org_fig.suptitle(get_display('כלי התקשורת והמפלגות עם הציוצים החיוביים ביותר והשליליים ביותר'), fontsize=16)
+
+# Show the retweets figure
+sentiment_org_fig.show(sentiment_org_ax)

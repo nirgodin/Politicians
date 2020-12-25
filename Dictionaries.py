@@ -10,7 +10,7 @@ politicians_dct = {'Abou-Shahadeh': ['ShahadehAbou', 'Meshutefet', 'Male', 'אב
                    'Edelstein': ['YuliEdelstein', 'Likud', 'Male', 'אדלשטיין'],
                    'Elharrar': ['KElharrar', 'Yesh_Atid', 'Female', 'אלהרר'],
                    'Alkhrumi': ['saeedalkhrumi', 'Meshutefet', 'Male', 'אלחרומי'],
-                   'Elkin': ['zeev_elkin', 'Likud', 'Male', 'אלקין'],
+                   'Elkin': ['zeev_elkin', 'Tikva_Chadasha', 'Male', 'אלקין'],
                    'Amsalem': ['dudiamsalem', 'Likud', 'Male', 'אמסלם'],
                    'Akunis': ['OfirAkunis', 'Likud', 'Male', 'אקוניס'],
                    'Ashkenazi': ['Gabi_Ashkenazi', 'Kachol_Lavan', 'Male', 'אשכנזי'],
@@ -33,7 +33,7 @@ politicians_dct = {'Abou-Shahadeh': ['ShahadehAbou', 'Meshutefet', 'Male', 'אב
                    'Halevi': ['HaleviAmit', 'Likud', 'Male', 'הלוי'],
                    'Hanegbi': ['Tzachi_Hanegbi', 'Likud', 'Male', 'הנגבי'],
                    'Hendel': ['YoazHendel1', 'Derech_Eretz', 'Male', 'הנדל'],
-                   'Haskel': ['SharrenHaskel', 'Likud', 'Female', 'השכל'],
+                   'Haskel': ['SharrenHaskel', 'Tikva_Chadasha', 'Female', 'השכל'],
                    'Cotler-Wunsh': ['CotlerWunsh', 'Kachol_Lavan', 'Female', 'וונש'],
                    'Zohar': ['zoharm7', 'Likud', 'Male', 'זוהר'],
                    'Zamir': ['asafzamir', 'Kachol_Lavan', 'Male', 'זמיר'],
@@ -71,7 +71,7 @@ politicians_dct = {'Abou-Shahadeh': ['ShahadehAbou', 'Meshutefet', 'Male', 'אב
                    'Sova': ['evgenysova', 'Israel_Beytenu', 'Male', 'סובה'],
                    'Sofer': ['ofir_sofer', 'Yamina', 'Male', 'סופר'],
                    'Smotrich': ['bezalelsm', 'Yamina', 'Male', 'סמוטריץ'],
-                   'Saar': ['gidonsaar', 'Likud', 'Male', 'סער'],
+                   'Saar': ['gidonsaar', 'Tikva_Chadasha', 'Male', 'סער'],
                    'Abbas': ['mnsorabbas', 'Meshutefet', 'Male', 'עבאס'],
                    'Odeh': ['AyOdeh', 'Meshutefet', 'Male', 'עודה'],
                    'Atia-Hava': ['ettyatia', 'Likud', 'Female', 'עטייה-חוה'],
@@ -88,13 +88,13 @@ politicians_dct = {'Abou-Shahadeh': ['ShahadehAbou', 'Meshutefet', 'Male', 'אב
                    'Regev': ['regev_miri', 'Likud', 'Female', 'רגב'],
                    'Roll': ['idanroll', 'Yesh_Atid', 'Male', 'רול'],
                    'Razvozov': ['YRazvozov', 'Yesh_Atid', 'Male', 'רזבוזוב'],
-                   'Shasha-Biton': ['sbyifat', 'Likud', 'Female', 'שאשא-ביטון'],
+                   'Shasha-Biton': ['sbyifat', 'Tikva_Chadasha', 'Female', 'שאשא-ביטון'],
                    'Shihadeh': ['MtanesShihadeh', 'Meshutefet', 'Male', 'שחאדה'],
                    'Steinitz': ['steinitz_yuval', 'Likud', 'Male', 'שטייניץ'],
                    'Shitrit': ['shitrit_keti', 'Likud', 'Female', 'שטרית'],
                    'Stern': ['Elazar_stern', 'Yesh_Atid', 'Male', 'שטרן'],
                    'Shay-Vazan': ['HVazan', 'Kachol_Lavan', 'Female', 'שי-וזאן'],
-                   'Shir': ['MichalShir', 'Likud', 'Female', 'שיר'],
+                   'Shir': ['MichalShir', 'Tikva_Chadasha', 'Female', 'שיר'],
                    'Shelah': ['OferShelah', 'Yesh_Atid', 'Male', 'שלח'],
                    'Shmuli': ['ishmuli', 'Avoda', 'Male', 'שמולי'],
                    'Shefa': ['ramshefa', 'Kachol_Lavan', 'Male', 'שפע'],
@@ -136,7 +136,7 @@ media_dct = {'Haaretz': ['Haaretz', np.nan, np.nan, 'הארץ'],
              'Reshet_Bet': ['ReshetBet', np.nan, np.nan, 'רשת ב'],
              '103FM': ['radio103fm', np.nan, np.nan, '103FM']}
 
-journalists_dct = {'Weiss': ['danawt', 'N12', 'Female', 'דנה וייס'],        # N12
+journalists_dct = {'Weiss': ['danawt', 'N12', 'Female', 'דנה וייס'],                    # N12
                    'Segal_Amit': ['amit_segal', 'N12', 'Male', 'עמית סגל'],
                    'Nir': ['arad_nir', 'N12', 'Male', 'ערד ניר'],
                    'Liel': ['DaphnaLiel', 'N12', 'Female', 'דפנה ליאל'],
@@ -151,7 +151,7 @@ journalists_dct = {'Weiss': ['danawt', 'N12', 'Female', 'דנה וייס'],     
                    'Dadon': ['DadonAdva', 'N12', 'Female', 'אדוה דדון'],
                    'Tvizer': ['inbartvizer', 'N12', 'Female', 'ענבר טויזר'],
                    'Duek_Amalya': ['AmalyaDuek', 'N12', 'Female', 'עמליה דואק'],
-                   'Drucker': ['RavivDrucker', 'Reshet', 'Male', 'רביב דרוקר'], # Reshet
+                   'Drucker': ['RavivDrucker', 'Reshet', 'Male', 'רביב דרוקר'],          # Reshet
                    'Kra': ['baruchikra', 'Reshet', 'Male', 'ברוך קרא'],
                    'Hasson_Ayala': ['AyalaHasson', 'Reshet', 'Female', 'איילה חסון'],
                    'Lieberman_Chen': ['Liberwomen', 'Reshet', 'Female', 'חן ליברמן'],
@@ -164,6 +164,10 @@ journalists_dct = {'Weiss': ['danawt', 'N12', 'Female', 'דנה וייס'],     
                    'Heller': ['OrHeller', 'Reshet', 'Male', 'אור הלר'],
                    'Boker': ['bokeralmog', 'Reshet', 'Male', 'אלמוג בוקר'],
                    'Kenan': ['LiorKenan', 'Reshet', 'Female', 'ליאור קינן'],
+                   'Maniv': ['omrimaniv', 'Reshet', 'Male', 'עמרי מניב'],
+                   'Eli_Yossi': ['Yossi_eli', 'Reshet', 'Male', 'יוסי אלי'],
+                   'Shiper': ['hadarshiper', 'Reshet', 'Male', 'הדר שיפר'],
+                   'Rivlin_Haim': ['LifeRivlin', 'Reshet', 'Male', 'חיים ריבלין'],
                    'Novick': ['akivanovick', 'Kann', 'Male', 'עקיבא נוביק'],              # Kann
                    'Lampel': ['DoriaLampel', 'Kann', 'Female', 'דוריה למפל'],
                    'Menashe': ['ela1949', 'Kann', 'Female', 'כרמלה מנשה'],
@@ -173,54 +177,92 @@ journalists_dct = {'Weiss': ['danawt', 'N12', 'Female', 'דנה וייס'],     
                    'Shemesh': ['shemeshmicha', 'Kann', 'Male', 'מיכאל שמש'],
                    'Ben-Ovadia': ['talibo8', 'Kann', 'Female', 'טלי בן-עובדיה'],
                    'Yarkechy': ['DanaYarkechy', 'Kann', 'Female', 'דנה ירקחי'],
-                   'Segal_Erel': ['ErelSegal', 'Arutz_20', 'Male', 'אראל סגל'],    # Arutz 20
+                   'Shickman': ['ittaishick', 'Kann', 'Male', 'איתי שיקמן'],
+                   'Moshe-Fredo': ['NOFARMOS', 'Kann', 'Female', 'נופר משה-פרדו'],
+                   'Berger': ['galberger', 'Kann', 'Male', 'גל ברגר'],
+                   'Shapira': ['yaara_shapira', 'Kann', 'Female', 'יערה שפירא'],
+                   'Kogainof': ['lirankog', 'Kann', 'Male', 'לירן כוגהינוף'],
+                   'Hammerschlag': ['rubih67', 'Kann', 'Male', 'רובי המרשלג'],
+                   'Pelman': ['VeredPelman', 'Kann', 'Female', 'ורד פלמן'],
+                   'Reuveni': ['Nov_reuveny', 'Kann', 'Male', 'נוב ראובני'],
+                   'Sharon_Roy': ['roysharon11', 'Kann', 'Male', 'רועי שרון'],
+                   'Segal_Erel': ['ErelSegal', 'Arutz_20', 'Male', 'אראל סגל'],           # Arutz 20
                    'Magal': ['YinonMagal', 'Arutz_20', 'Male', 'ינון מגל'],
                    'Riklin': ['Riklin10', 'Arutz_20', 'Male', 'שמעון ריקלין'],
                    'Golan': ['BoazGolan', 'Arutz_20', 'Male', 'בועז גולן'],
-                   'Levinson': ['chaimlevinson', 'Haaretz', 'Male', 'חיים לוינסון'],  # Haaretz
+                   'Bitton-Rosen': ['BittonRosen', 'Arutz_20', 'Male', 'הלל ביטון-רוזן'],
+                   'Shemesh': ['Litalsun', 'Arutz_20', 'Female', 'ליטל שמש'],
+                   'Levinson': ['chaimlevinson', 'Haaretz', 'Male', 'חיים לוינסון'],      # Haaretz
                    'Landau': ['noa_landau', 'Haaretz', 'Female', 'נעה לנדאו'],
                    'Breiner': ['JoshBreiner', 'Haaretz', 'Male', 'גוש בריינר'],
                    'Hasson_Nir': ['nirhasson', 'Haaretz', 'Male', 'ניר חסון'],
                    'Lee': ['VeredLee1', 'Haaretz', 'Female', 'ורד לי'],
                    'Misgav': ['UriMisgav', 'Haaretz', 'Male', 'אורי משגב'],
                    'Peleg_Bar': ['bar_peleg', 'Haaretz', 'Male', 'בר פלג'],
-                   'Tucker': ['nati_tucker', 'The_Marker', 'Male', 'נתי טוקר'],   # The Marker
+                   'Rabinoviz': ['AronRabino1', 'Haaretz', 'Male', 'אהרון רבינוביץ'],
+                   'Bandel': ['netaelbandel', 'Haaretz', 'Male', 'נטעאל בנדל'],
+                   'Ronel': ['AsafRonel', 'Haaretz', 'Male', 'אסף רונאל'],
+                   'Yaron': ['lee_yaron', 'Haaretz', 'Female', 'לי ירון'],
+                   'Tucker': ['nati_tucker', 'The_Marker', 'Male', 'נתי טוקר'],           # The Marker
                    'Rolnik': ['grolnik', 'The_Marker', 'Male', 'גיא רולניק'],
                    'Maor': ['DafnaMaor', 'The_Marker', 'Female', 'דפנה מאור'],
                    'Linder': ['RonnyLinder', 'The_Marker', 'Female', 'רוני לינדר'],
                    'Peretz_Sami': ['peretzsami', 'The_Marker', 'Male', 'סמי פרץ'],
                    'Avriel': ['EytanAvriel', 'The_Marker', 'Male', 'איתן אבריאל'],
                    'Megiddo': ['GurMegiddo', 'The_Marker', 'Male', 'גור מגידו'],
-                   'Liebskind': ['KalmanLiebskind', 'Maariv', 'Male', 'קלמן ליבסקינד'],  # Maariv
+                   'Ashcknasy_Bini': ['BiniAshcknasy', 'The_Marker', 'Male', 'ביני אשכנזי'],
+                   'Klingbail': ['sivan_kli', 'The_Marker', 'Female', 'סיון קלינגבייל'],
+                   'Sadeh': ['shukisadeh', 'The_Marker', 'Male', 'שוקי שדה'],
+                   'Liebskind': ['KalmanLiebskind', 'Maariv', 'Male', 'קלמן ליבסקינד'],   # Maariv
                    'Caspit': ['BenCaspit', 'Maariv', 'Male', 'בן כספית'],
+                   'Batito': ['EliavBatito', 'Maariv', 'Male', 'אליאב בטיטו'],
                    'Rayva-Barsky': ['AnnaBarskiy', 'Maariv', 'Female', 'אנה רביה-ברסקי'],
-                   'Eyal': ['Nadav_Eyal', 'Yediot', 'Male', 'נדב אייל'],            # Yediot
+                   'Levin': ['talialin', 'Maariv', 'Female', 'טליה לוין'],
+                   'Lev-Ram': ['tallevram', 'Maariv', 'Male', 'טל לב-רם'],
+                   'Bender': ['arikbender', 'Maariv', 'Male', 'אריק בנדר'],
+                   'Eyal': ['Nadav_Eyal', 'Yediot', 'Male', 'נדב אייל'],                  # Yediot
                    'Attali': ['attaliami', 'Yediot', 'Male', 'עמיחי אתאלי'],
                    'Karni': ['YuvalKarni', 'Yediot', 'Male', 'יובל קרני'],
                    'Yehoshua': ['YehoshuaYosi', 'Yediot', 'Male', 'יוסי יהושע'],
-                   'Shlezinger': ['judash0', 'Israel_Hayom', 'Male', 'יהודה שלזינגר'],   # Israel Hayom
+                   'Shlezinger': ['judash0', 'Israel_Hayom', 'Male', 'יהודה שלזינגר'],    # Israel Hayom
                    'Bismuth': ['BismuthBoaz', 'Israel_Hayom', 'Male', 'בועז ביסמוט'],
                    'Bigman': ['akibigman', 'Israel_Hayom', 'Male', 'עקיבא ביגמן'],
                    'Tuchfeld': ['tuchfeld', 'Israel_Hayom', 'Male', 'מתי טוכפלד'],
                    'Kahana_Ariel': ['arik3000', 'Israel_Hayom', 'Male', 'אריאל כהנא'],
                    'Allon': ['gideonallon', 'Israel_Hayom', 'Male', 'גדעון אלון'],
                    'Zwick': ['giladzw', 'Israel_Hayom', 'Male', 'גלעד צוויק'],
-                   'Segal_Haggai': ['haggai_segal', 'Makor_Rishon', 'Male', 'חגי סגל'], # Makor Rishon
+                   'Limor': ['LimorYoav', 'Israel_Hayom', 'Male', 'יואב לימור'],
+                   'Segal_Haggai': ['haggai_segal', 'Makor_Rishon', 'Male', 'חגי סגל'],   # Makor Rishon
                    'Schnabel': ['ariel_schnabel', 'Makor_Rishon', 'Male', 'אריאל שנבל'],
                    'German': ['ataragerman1', 'Makor_Rishon', 'Female', 'עטרה גרמן'],
                    'Ifrach': ['yehuday30', 'Makor_Rishon', 'Male', 'יהודה יפרח'],
                    'Goldclang': ['orlygogo', 'Makor_Rishon', 'Female', 'אורלי גולדקלנג'],
-                   'Grinzaig': ['avishaigrinzaig', 'Globes', 'Male', 'אבישי גרינצייג'],        # Globes
+                   'Amir_Noam': ['noamamir74', 'Makor_Rishon', 'Male', 'נועם אמיר'],
+                   'Kolman': ['batelkol', 'Makor_Rishon', 'Female', 'בתאל קולמן'],
+                   'Kraus': ['yair_kraus', 'Makor_Rishon', 'Male', 'יאיר קראוס'],
+                   'Grinzaig': ['avishaigrinzaig', 'Globes', 'Male', 'אבישי גרינצייג'],   # Globes
                    'Schneider': ['talschneider', 'Globes', 'Female', 'טל שניידר'],
                    'Avitan-Cohen': ['Shiritc', 'Globes', 'Female', 'שירית אביטן-כהן'],
                    'Maanit': ['chenmaanit7', 'Globes', 'Male', 'חן מענית'],
                    'Sikolar': ['naamasik', 'Globes', 'Female', 'נעמה סיקולר'],
                    'Baron': ['alonabaron', 'Globes', 'Female', 'אלונה בר-און'],
+                   'Dokow': ['Gidon_Dokow', 'Globes', 'Male', 'גדעון דוקוב'],
+                   'Ashkenazi_Shani': ['ShaniAshkenazi', 'Globes', 'Female', 'שני אשכנזי'],
+                   'Gutman_Lior': ['GutmanLior', 'Calcalist', 'Male', 'ליאור גוטמן'],     # Calcalist
+                   'Salinas': ['shaysalinas', 'Calcalist', 'Male', 'שי סלינס'],
+                   'Filut': ['AdrianFilut', 'Calcalist', 'Male', 'אדריאן פילוט'],
+                   'Ganon': ['tomer_ganon', 'Calcalist', 'Male', 'תומר גנון'],
+                   'Ilan_Shahar': ['shaharilan', 'Calcalist', 'Male', 'שחר אילן'],
+                   'Esteron': ['YoelEsteron', 'Calcalist', 'Male', 'יואל אסטרון'],
+                   'Marmor': ['drormarmor', 'Calcalist', 'Male', 'דרור מרמור'],
                    'Neubach': ['kereneubach', 'Reshet_Bet', 'Female', 'קרן נויבך'],       # Reshet Bet
                    'Lieberman_Assaf': ['asaf_lib', 'Reshet_Bet', 'Male', 'אסף ליברמן'],
                    'Kam': ['ZeevKam', 'Reshet_Bet', 'Male', 'זאב קם'],
                    'Deckel': ['YaronDeckel', 'Reshet_Bet', 'Male', 'ירון דקל'],
-                   'Shnerb': ['IshayShnerb', 'Galatz', 'Male', 'ישי שנרב'],              # Galatz
+                   'Binyamini': ['rbinyamini', 'Reshet_Bet', 'Male', 'רן בנימיני'],
+                   'Perez_Esty': ['perez_esty', 'Reshet_Bet', 'Female', 'אסתי פרז'],
+                   'Weinreb': ['yairweinreb', 'Reshet_Bet', 'Male', 'יאיר ויינרב'],
+                   'Shnerb': ['IshayShnerb', 'Galatz', 'Male', 'ישי שנרב'],               # Galatz
                    'Shtaif': ['hadasshtaif', 'Galatz', 'Female', 'הדס שטייף'],
                    'Zror': ['RinoZror', 'Galatz', 'Male', 'רינו צרור'],
                    'Canetti': ['Sykocan', 'Galatz', 'Female', 'נורית קנטי'],
@@ -228,11 +270,18 @@ journalists_dct = {'Weiss': ['danawt', 'N12', 'Female', 'דנה וייס'],     
                    'Cozin': ['yanircozin', 'Galatz', 'Male', 'יניר כוזין'],
                    'Segev': ['Segev_Yuval', 'Galatz', 'Male', 'יובל שגב'],
                    'Hauser-Tov': ['HauserTov', 'Galatz', 'Male', 'מיכאל האוזר-טוב'],
-                   'Shalev': ['talshalev1', 'Walla', 'Female', 'טל שלו'],              # Walla
+                   'Yagur': ['NivYagur', 'Galatz', 'Female', 'ניב יגור'],
+                   'Erel': ['ErelYuval', 'Galatz', 'Male', 'יובל אראל'],
+                   'Triger': ['efitriger', 'Galatz', 'Male', 'אפי טריגר'],
+                   'Daboush': ['TsahiDaboush', 'Galatz', 'Male', 'צחי דבוש'],
+                   'Asraf-Wolberg': ['moriah_asraf', 'Galatz', 'Female', 'מוריה אסרף-וולברג'],
+                   'Shalev': ['talshalev1', 'Walla', 'Female', 'טל שלו'],                  # Walla
                    'Ravid': ['BarakRavid', 'Walla', 'Male', 'ברק רביד'],
                    'Nahari': ['OrenNahari', 'Walla', 'Male', 'אורן נהרי'],
                    'Adamker': ['YakiAdamker', 'Walla', 'Male', 'יקי אדמקר'],
-                   'Somfalvi': ['attilus', 'Ynet', 'Male', 'אטילה שומפלבי'],                  # Ynet
-                   'Azulay': ['moran_ynet', 'Ynet', 'Female', 'מורן אזולאי']}
+                   'Levi_Liran': ['liran__levi', 'Walla', 'Male', 'לירן לוי'],
+                   'Somfalvi': ['attilus', 'Ynet', 'Male', 'אטילה שומפלבי'],               # Ynet
+                   'Azulay': ['moran_ynet', 'Ynet', 'Female', 'מורן אזולאי'],
+                   'Rimon': ['RimonRan', 'Ynet', 'Male', 'רן רימון']}
 
 
