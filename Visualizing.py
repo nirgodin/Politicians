@@ -8,11 +8,11 @@ from bidi.algorithm import get_display
 from Stopwords import stopwords_lst
 
 # Week number and print data
-week = '1'
+week = '2'
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 
 # Import data
-PS = pd.read_csv(r'Data\Organized' + '\\' + printDate + '.csv')
+PS = pd.read_csv(r'Data\Organized\Weekly\Organized ' + printDate + '.csv')
 
 # Defining few functions that will be relevant for the visualizations
 # First function takes a sorted dataframe and returns only the head and the tail of it, with the specified num. of rows
@@ -46,34 +46,34 @@ def word_count(str):
     return df
 
 
-# Creating an organization df, which will be useful for some of the visualizations
-Organizations = PS.groupby(['organization'], as_index=False).agg({'job': ['first'],
-                                                                  'retweet_count': ['sum', 'mean'],
-                                                                  'favorite_count': ['sum', 'mean'],
-                                                                  'word_count': ['sum', 'mean'],
-                                                                  'char_count': ['sum', 'mean'],
-                                                                  'negative': ['mean'],
-                                                                  'neutral': ['mean'],
-                                                                  'positive': ['mean'],
-                                                                  'compound': ['mean'],
-                                                                  'text': [' '.join]})
-
-# Replace column names
-Organizations.columns = list(map(''.join, Organizations.columns.values))
-Organizations = Organizations.rename(columns={'jobfirst': 'job',
-                                              'retweet_countsum': 'retweet_count',
-                                              'retweet_countmean': 'avg_retweet_count',
-                                              'favorite_countsum': 'favorite_count',
-                                              'favorite_countmean': 'avg_favorite_count',
-                                              'word_countsum': 'word_count',
-                                              'word_countmean': 'avg_word_count',
-                                              'char_countsum': 'char_count',
-                                              'char_countmean': 'avg_char_count',
-                                              'negativemean': 'negative',
-                                              'neutralmean': 'neutral',
-                                              'positivemean': 'positive',
-                                              'compoundmean': 'compound',
-                                              'textjoin': 'text'})
+# # Creating an organization df, which will be useful for some of the visualizations
+# Organizations = PS.groupby(['organization'], as_index=False).agg({'job': ['first'],
+#                                                                   'retweet_count': ['sum', 'mean'],
+#                                                                   'favorite_count': ['sum', 'mean'],
+#                                                                   'word_count': ['sum', 'mean'],
+#                                                                   'char_count': ['sum', 'mean'],
+#                                                                   'negative': ['mean'],
+#                                                                   'neutral': ['mean'],
+#                                                                   'positive': ['mean'],
+#                                                                   'compound': ['mean'],
+#                                                                   'text': [' '.join]})
+#
+# # Replace column names
+# Organizations.columns = list(map(''.join, Organizations.columns.values))
+# Organizations = Organizations.rename(columns={'jobfirst': 'job',
+#                                               'retweet_countsum': 'retweet_count',
+#                                               'retweet_countmean': 'avg_retweet_count',
+#                                               'favorite_countsum': 'favorite_count',
+#                                               'favorite_countmean': 'avg_favorite_count',
+#                                               'word_countsum': 'word_count',
+#                                               'word_countmean': 'avg_word_count',
+#                                               'char_countsum': 'char_count',
+#                                               'char_countmean': 'avg_char_count',
+#                                               'negativemean': 'negative',
+#                                               'neutralmean': 'neutral',
+#                                               'positivemean': 'positive',
+#                                               'compoundmean': 'compound',
+#                                               'textjoin': 'text'})
 
 
 ##################################################     WORDCLOUD     ##################################################
@@ -113,7 +113,7 @@ wordcloud.to_file(r'Visualizations\Wordclouds\Wordcloud ' + printDate + '.png')
 
 # Set plotting area
 twt_fig, twt_ax = plt.subplots(1, 2)
-twt_fig.set_size_inches(6, 3.35)
+twt_fig.set_size_inches(12, 6.7)
 
 # Plot journalist figure
 j_twt_fig = sns.barplot(x='tweet_count',
@@ -140,11 +140,11 @@ p_twt_fig.set_title(get_display('פוליטיקאים'), fontsize=14)
 
 # Delete subplots axes titles
 for i in range(0, 2):
-    twt_ax[i].set_xlabel('')
+    twt_ax[i].set_xlabel(get_display('מספר ציוצים'))
     twt_ax[i].set_ylabel('')
 
-# Set main title to the whole figure
-twt_fig.suptitle(get_display('הצייצנים הפעילים ביותר'), fontsize=16)
+# Tight layout
+twt_fig.tight_layout()
 
 # Show the tweet count figure
 twt_fig.show(twt_ax)
@@ -473,7 +473,6 @@ sns.boxplot(x='job',
             showfliers=False,
             data=PS[PS['job'] == 'Politician'])
 
-
 # Media favorites boxplot
 sns.boxplot(x='job',
             y='avg_favorite_count',
@@ -546,3 +545,49 @@ sentiment_org_fig.suptitle(get_display('כלי התקשורת והמפלגות �
 
 # Show the retweets figure
 sentiment_org_fig.show(sentiment_org_ax)
+
+
+#####################################      TIMESERIES -  SENTIMENT ANALYSIS      #####################################
+
+
+dt = pd.read_csv(r'Data\Sentiment\Sentiment.csv')
+
+# Transform the created at column to a date column with datetime format
+dt['created_at'] = dt['created_at'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S').date())
+
+# Group by date, and return the mean sentiment values
+dt = dt.groupby(['created_at', 'job'], as_index=False).agg({'negative': ['mean'],
+                                                     'neutral': ['mean'],
+                                                     'positive': ['mean'],
+                                                     'compound': ['mean']})
+
+# Replace column names
+dt.columns = list(map(''.join, dt.columns.values))
+dt = dt.rename(columns={'created_at': 'date',
+                        'negativemean': 'negative',
+                        'neutralmean': 'neutral',
+                        'positivemean': 'positive',
+                        'compoundmean': 'compound'})
+
+# Transform dataframe to long format
+dt2 = pd.melt(dt,
+              id_vars='date',
+              value_vars=['negative', 'neutral', 'positive', 'compound'])
+
+# Plot the compound sentiment over time
+sns.lineplot(x='date',
+             y='value',
+             hue='variable',
+             data=dt2)
+
+
+# Compute traffic and average traffic count
+df['traffic_count'] = df['retweet_count'] + df['favorite_count']
+df['avg_traffic_count'] = df['traffic_count'] / df['tweet_count']
+
+# Apply the get_display function on all the hebew names in the dataframe
+df['hebrew_name'] = [get_display(df['hebrew_name'][i]) for i in df.index.tolist()]
+
+# Drop rows with null text
+df = df[df['text'] != '']
+

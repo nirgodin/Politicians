@@ -15,10 +15,10 @@ import nltk
 
 # Setting start and end date, to scrape tweets in between. Also, setting week number for data export and import
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
-startDate = datetime(2020, 12, 18)
-endDate = datetime(2020, 12, 25)
+startDate = datetime(2020, 12, 25)
+endDate = datetime(2021, 1, 1)
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
-week = '1'
+week = '2'
 
 # Setting the necessary twitter developer credentials to use the tweepy package and scrape tweets
 # These are set as environment variables
@@ -107,12 +107,23 @@ Parties.insert(1, 'job', 'Party')
 # Concatenate the dataframes to the Political System (PS) dataframe
 PS_raw = pd.concat([Politicians, Journalists, Media, Parties]).reset_index(drop=True)
 
-# Export the raw dataframe to the Raw folder
-PS_raw.to_csv(r'Data\Raw' + '\\' + printDate + '.csv')
+# Export the raw dataframe to the Weekly Raw folder
+PS_raw.to_csv(r'Data\Raw\Weekly\Raw ' + printDate + '.csv', index=False)
+
+# Appending by dfs concatenation the data to the csv file containing data from all dates
+# Importing the full dataframe
+Raw = pd.read_csv(r'Data\Raw\Raw.csv')
+
+# Verifying the currently scraped dataframe is in the same column order as the final data one
+PS_raw = PS_raw[Raw.columns]
+
+# Concatenating and saving
+Raw = pd.concat([Raw, PS_raw])
+Raw.to_csv(r'Data\Raw\Raw.csv', index=False)
 
 
-# Sentiment function
-def df_sentiment(df):
+# Punctuation delete function
+def df_punct(df):
 
     # Reset index
     df = df.reset_index(drop=True)
@@ -123,6 +134,15 @@ def df_sentiment(df):
 
     # Delete punctuation
     df['text'] = [re.sub(r'[^\w\s]', '', str(txt).lower().strip()) for txt in df['text']]
+
+    return df
+
+
+# Sentiment function
+def df_sentiment(df):
+
+    # Reset index
+    df = df.reset_index(drop=True)
 
     # Compute Sentiment, using vader and google translate
     df['sentiment_dct'] = [sid.polarity_scores(translator.translate(txt)) for txt in df['text']]
@@ -191,17 +211,50 @@ def df_organizer(df):
     return df
 
 
-
+# Delete punctuation
+PS_raw = df_punct(PS_raw)
 
 # Compute sentiment and export
 PS_sentiment = df_sentiment(PS_raw)
 
 # Export the sentiment dataframe
-PS_sentiment.to_csv(r'Data\Sentiment' + '\\' + printDate + '.csv', index=False)
+PS_sentiment.to_csv(r'Data\Sentiment\Weekly\Sentiment ' + printDate + '.csv', index=False)
+
+# Appending by dfs concatenation the data to the csv file containing data from all dates
+# Importing the full dataframe
+Sentiment = pd.read_csv(r'Data\Sentiment\Sentiment.csv')
+
+# Verifying the currently scraped dataframe is in the same column order as the final data one
+PS_sentiment = PS_sentiment[Sentiment.columns]
+
+# Concatenating and saving
+Sentiment = pd.concat([Sentiment, PS_sentiment])
+Sentiment.to_csv(r'Data\Sentiment\Sentiment.csv', index=False)
 
 # Organize the dataframe to final analysis and visualization
 PS = df_organizer(PS_sentiment)
 
 # Export dataframe
-PS.to_csv(r'Data\Organized' + '\\' + printDate + '.csv', index=False)
+PS.to_csv(r'Data\Organized\Weekly\Organized ' + printDate + '.csv', index=False)
 
+# Appending by dfs concatenation the data to the csv file containing data from all dates
+# Importing the full dataframe
+Organized = pd.read_csv(r'Data\Organized\Organized.csv')
+
+# Verifying the currently scraped dataframe is in the same column order as the final data one
+PS = PS[Organized.columns]
+
+# Concatenating and saving
+Organized = pd.concat([Organized, PS])
+Organized.to_csv(r'Data\Organized\Organized.csv', index=False)
+
+
+##########################################              SKETCH          #############################################
+last_week = pd.read_csv(r'Data\Raw\Weekly\Raw 25-12-2020.csv')
+this_week = pd.read_csv(r'Data\Raw\Weekly\Raw 1-1-2021.csv')
+
+PS = pd.concat([last_week, this_week])
+
+PS = df_organizer(df_punct(PS))
+
+PS_raw = pd.read_csv(r'Data\Raw\Weekly\Raw 1-1-2021.csv')
