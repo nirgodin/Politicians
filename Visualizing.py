@@ -6,6 +6,7 @@ from matplotlib.figure import Figure
 import seaborn as sns
 from bidi.algorithm import get_display
 from Stopwords import stopwords_lst
+from Functions import head_and_tail, word_count
 
 # Week number and print data
 week = '2'
@@ -14,36 +15,6 @@ printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + st
 # Import data
 PS = pd.read_csv(r'Data\Organized\Weekly\Organized ' + printDate + '.csv')
 
-# Defining few functions that will be relevant for the visualizations
-# First function takes a sorted dataframe and returns only the head and the tail of it, with the specified num. of rows
-
-
-def head_and_tail(df, nrow=20):
-    df = df.head(nrow).append(df.tail(nrow))
-    return df
-
-
-# Second function takes a str and returns a dataframe with all the unique words in the string
-# and the times each word appeared in it
-
-
-def word_count(str):
-    counts = dict()
-    words = str.split()
-
-    # Count the words in the string
-    for word in words:
-        if word in counts:
-            counts[word] += 1
-        else:
-            counts[word] = 1
-
-    # pass the word count to a sorted dataframe
-    df = pd.DataFrame({'word': list(counts.keys()),
-                       'count': list(counts.values())})
-    df = df.sort_values(by='count', ascending=False).reset_index(drop=True)
-
-    return df
 
 
 # # Creating an organization df, which will be useful for some of the visualizations
@@ -160,6 +131,7 @@ twt_fig.savefig(r'Visualizations\Tweets\Tweets ' + printDate + '.png')
 
 # Set plotting area
 fav_fig, fav_ax = plt.subplots(1, 2)
+fav_fig.set_size_inches(12, 6.7)
 
 # Plot journalist figure
 j_fav_fig = sns.barplot(x='avg_favorite_count',
@@ -186,14 +158,17 @@ p_fav_fig.set_title(get_display('פוליטיקאים'), fontsize=14)
 
 # Delete subplots axes titles
 for i in range(0, 2):
-    fav_ax[i].set_xlabel('')
+    fav_ax[i].set_xlabel(get_display('ממוצע פברוטים לציוץ'))
     fav_ax[i].set_ylabel('')
 
-# Set main title to the whole figure
-fav_fig.suptitle(get_display('הצייצנים עם מספר הפברוטים הגבוה ביותר'), fontsize=16)
+# Tight layout
+fav_fig.tight_layout()
 
 # Show the favorites figure
 fav_fig.show(fav_ax)
+
+# Export the favorites count figure
+fav_fig.savefig(r'Visualizations\Favorites\Favorites ' + printDate + '.png')
 
 
 ##################################################      RETWEETS      ##################################################
@@ -201,6 +176,7 @@ fav_fig.show(fav_ax)
 
 # Set plotting area
 rt_fig, rt_ax = plt.subplots(1, 2)
+rt_fig.set_size_inches(12, 6.7)
 
 # Plot journalist figure
 j_rt_fig = sns.barplot(x='avg_retweet_count',
@@ -227,17 +203,16 @@ p_rt_fig.set_title(get_display('פוליטיקאים'), fontsize=14)
 
 # Delete subplots axes titles
 for i in range(0, 2):
-    rt_ax[i].set_xlabel('')
+    rt_ax[i].set_xlabel(get_display('ממוצע ריטוויטים לציוץ'))
     rt_ax[i].set_ylabel('')
 
-# Set main title to the whole figure
-rt_fig.suptitle(get_display('הצייצנים עם מספר הריטוויטים הממוצע הגבוה ביותר'), fontsize=16)
+# Tight layout
+rt_fig.tight_layout()
 
 # Show the retweets figure
-rt_fig.show(rt_ax)
+rt_fig.show(fav_ax)
 
-# Save figures
-fav_fig.savefig(r'Visualizations\Favorites\Favorites ' + printDate + '.png')
+# Export the retweets count figure
 rt_fig.savefig(r'Visualizations\Retweets\Retweets ' + printDate + '.png')
 
 

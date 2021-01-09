@@ -2,29 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f3dbd698-9409-4bea-9e93-9c979b87d9e2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Data/Organized/Organized.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Organized/Weekly/Organized 1-1-2021.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Organized/Weekly/Organized 25-12-2020.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Raw/Raw.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Raw/Weekly/Raw 1-1-2021.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Raw/Weekly/Raw 25-12-2020.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Sentiment/Sentiment.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Sentiment/Weekly/Sentiment 1-1-2021.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Data/Sentiment/Weekly/Sentiment 25-12-2020.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Visualizations/Tweets/Tweets 1-1-2021.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Visualizations/Wordclouds/Wordcloud 1-1-2021.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Data/Raw/Weekly/Raw 8-1-2021.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Functions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Learning.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Favorites/Favorites 9-1-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Retweets/Retweets 9-1-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Wordclouds/Wordcloud 8-1-2021.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Organized/25-12-2020.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Organized/Week1.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Raw/25-12-2020.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Raw/Week_1.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Sentiment/25-12-2020.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Data/Sentiment/Week1.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Raw/Raw.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Raw/Raw.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Dictionaries.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dictionaries.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Stopwords.py" beforeDir="false" afterPath="$PROJECT_DIR$/Stopwords.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Tweets Scraping.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tweets Scraping.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Visualizations/Tweets/Tweets_1.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Visualizing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Visualizing.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

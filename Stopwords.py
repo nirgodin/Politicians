@@ -133,7 +133,11 @@ stopwords_manually = ['אני',
                       'רגע',
                       'מקום',
                       'אולי',
-                      'יכול']
+                      'יכול',
+                      'פה',
+                      'הלילה',
+                      'הכי',
+                      'שלהם']
 
 stopwords_lst = stopwords_lst + stopwords_manually
 
