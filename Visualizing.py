@@ -7,6 +7,7 @@ import seaborn as sns
 from bidi.algorithm import get_display
 from Stopwords import stopwords_lst
 from Functions import head_and_tail, word_count
+import re
 
 # Week number and print data
 week = '2'
@@ -14,7 +15,6 @@ printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + st
 
 # Import data
 PS = pd.read_csv(r'Data\Organized\Weekly\Organized ' + printDate + '.csv')
-
 
 
 # # Creating an organization df, which will be useful for some of the visualizations
@@ -259,6 +259,7 @@ sentiment_ppl_fig.show(sentiment_ppl_ax)
 
 #######################################       GENDER - WORD USE DIFFERENCE       #######################################
 
+# PS['text'] = [re.sub(r'[A-Z,a-z,\d+]+', "", txt) for txt in PS['text']]
 
 male_str = ' '.join(PS['text'][PS['gender'] == 'Male'])
 female_str = ' '.join(PS['text'][PS['gender'] == 'Female'])
@@ -354,7 +355,7 @@ sns.boxplot(x='job',
             hue='gender',
             showfliers=False,
             ax=gen_ax_words[0],
-            data=PS)
+            data=PS[PS['gender'].notna()])
 
 # Gender word count boxplot
 sns.boxplot(x='job',
@@ -363,7 +364,7 @@ sns.boxplot(x='job',
             hue='gender',
             showfliers=False,
             ax=gen_ax_words[1],
-            data=PS)
+            data=PS[PS['gender'].notna()])
 
 gen_fig_words.show(gen_ax_words)
 

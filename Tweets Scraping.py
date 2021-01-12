@@ -48,8 +48,6 @@ PS_raw = PS_raw[Raw.columns]
 Raw = pd.concat([Raw, PS_raw])
 Raw.to_csv(r'Data\Raw\Raw.csv', index=False)
 
-
-
 PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw 8-1-2021.csv')
 # Delete punctuation
 PS_raw = df_punct(PS_raw)

@@ -105,6 +105,7 @@ def df_sentiment(df):
     # Import necessary libraries
     from nltk.sentiment.vader import SentimentIntensityAnalyzer
     from google_trans_new import google_translator
+    import time
 
     # Set Google Translator
     translator = google_translator()
@@ -116,7 +117,25 @@ def df_sentiment(df):
     df = df.reset_index(drop=True)
 
     # Compute Sentiment, using vader and google translate
-    df['sentiment_dct'] = [sid.polarity_scores(translator.translate(txt)) for txt in df['text']]
+
+    # Initializing an empty sentiment list to which the sentiment dct for each tweet will be appended
+    sentiment_lst = []
+
+    # Filling the column with the sentiment dictionaries
+    # This is done with sleeps between each iteration to avoid the 429: Too Many Requests error
+    for i in range(0, len(df)):
+        en_text = translator.translate(df['text'][i])
+        sentiment_lst.append(sid.polarity_scores(en_text))
+
+        if i % 10 == 0:
+            time.sleep(2)
+        else:
+            time.sleep(0.3)
+
+    # Pass the final sentiment lst to a sentiment dct column
+    df['sentiment_dct'] = sentiment_lst
+
+    # Creating new columns for each dictionary key and dropping the dictionary itself
     df['negative'] = [df['sentiment_dct'][i]['neg'] for i in df.index.tolist()]
     df['neutral'] = [df['sentiment_dct'][i]['neu'] for i in df.index.tolist()]
     df['positive'] = [df['sentiment_dct'][i]['pos'] for i in df.index.tolist()]
