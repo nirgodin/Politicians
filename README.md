@@ -10,4 +10,6 @@ In lights of these development and the exponential evolvement of the Natural Lan
 # Wordclouds
 A clear, usefull and colourfull way to describe what's on the agenda is a wordcloud, containing the words that were mainly used during a given period of time. Each word's size indicates the number of times it was used relative to the other words. This cloud, for example, is representing the agenda on the third week of the election, from 01-01-2021 until 08-01-2021. 
 
-![Screenshot](Wordcloud Example.png)
+<p align="center">
+  <img src="Visualizations/Wordclouds/Wordcloud%208-1-2021.png">
+</p>
