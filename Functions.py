@@ -130,7 +130,7 @@ def df_sentiment(df):
         if i % 10 == 0:
             time.sleep(2)
         else:
-            time.sleep(0.3)
+            time.sleep(0.5)
 
     # Pass the final sentiment lst to a sentiment dct column
     df['sentiment_dct'] = sentiment_lst

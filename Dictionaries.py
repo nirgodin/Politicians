@@ -135,7 +135,7 @@ media_dct = {'Haaretz': ['Haaretz', 'Haaretz', np.nan, 'הארץ'],
              'Arutz_20': ['arutz20', 'Arutz_20', np.nan, 'ערוץ 20'],
              'Arutz_7': ['arutz7heb', 'Arutz_7', np.nan, 'ערוץ 7'],
              'Knesset': ['KnessetT', 'Knesset', np.nan, 'ערוץ הכנסת'],
-             'GLZ': ['GLZRadio', 'GLZ', np.nan, 'גלצ'],
+             'GLZ': ['GLZRadio', 'Galatz', np.nan, 'גלצ'],
              'Reshet_Bet': ['ReshetBet', 'Reshet_Bet', np.nan, 'רשת ב'],
              '103FM': ['radio103fm', '103FM', np.nan, '103FM']}
 
@@ -212,6 +212,7 @@ journalists_dct = {'Weiss': ['danawt', 'N12', 'Female', 'דנה וייס'],     
                    'Ronel': ['AsafRonel', 'Haaretz', 'Male', 'אסף רונאל'],
                    'Yaron': ['lee_yaron', 'Haaretz', 'Female', 'לי ירון'],
                    'Kubovich': ['yanivkub', 'Haaretz', 'Male', 'יניב קובוביץ'],
+                   'Canaf': ['UriahCanaff', 'Haaretz', 'Male', 'אוריה כנף'],
                    'Tucker': ['nati_tucker', 'The_Marker', 'Male', 'נתי טוקר'],           # The Marker
                    'Rolnik': ['grolnik', 'The_Marker', 'Male', 'גיא רולניק'],
                    'Maor': ['DafnaMaor', 'The_Marker', 'Female', 'דפנה מאור'],

@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from _datetime import datetime
 from wordcloud import WordCloud
@@ -6,15 +7,22 @@ from matplotlib.figure import Figure
 import seaborn as sns
 from bidi.algorithm import get_display
 from Stopwords import stopwords_lst
-from Functions import head_and_tail, word_count
-import re
+from Functions import head_and_tail, word_count, df_punct, df_organizer
 
 # Week number and print data
 week = '2'
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 
 # Import data
-PS = pd.read_csv(r'Data\Organized\Weekly\Organized ' + printDate + '.csv')
+# Weekly data
+weekly = pd.read_csv(r'Data\Raw\Weekly\Raw ' + printDate + '.csv')
+weekly = df_punct(weekly)
+
+# Overall data
+PS = pd.read_csv(r'Data\Raw\Raw.csv')
+PS = df_punct(PS)
+PS = PS[PS['rt'] == 0]
+PS = df_organizer(PS, sentiment='off')
 
 
 # # Creating an organization df, which will be useful for some of the visualizations
@@ -52,7 +60,7 @@ PS = pd.read_csv(r'Data\Organized\Weekly\Organized ' + printDate + '.csv')
 
 # First, we'll create several dataframes with the groupby function, each of them grouping the tweets along
 # different aspect. This will allow us to create different wordclouds to analyze different aspects
-system_str = ' '.join(PS['text'])
+system_str = ' '.join(weekly['text'])
 
 # Remove stopwords from the system string - splitting, removing and joining back
 system_token = system_str.split()
@@ -303,44 +311,95 @@ gen_word_diff = sns.catplot(x='difference',
                                                                      ascending=False).reset_index(drop=True)))
 
 
-########################################       GENDER - TRAFFIC ANALYSIS       ########################################
+########################################       GENDER - TRAFFIC BARPLOTS       ########################################
 
 
-gen_fig_traffic, gen_ax_traffic = plt.subplots(1, 2)
+# Set plotting area
+gen_fig_barplot, gen_ax_barplot = plt.subplots(1, 2)
+gen_fig_barplot.set_size_inches(12, 6.7)
 
-# Gender favorites boxplot
-fav_gen_fig = sns.boxplot(x='job',
-                          y='avg_favorite_count',
-                          palette='Set3',
-                          hue='gender',
-                          showfliers=False,
-                          ax=gen_ax_traffic[0],
-                          data=PS[PS['gender'].notna()])
+# Favorites barplot
+fav_gen_barplot = sns.barplot(x='job',
+                              y='favorite_count',
+                              hue='gender',
+                              ax=gen_ax_barplot[0],
+                              data=PS[PS['gender'].notna()])
 
 # Set title to the gender favorites subplot
-fav_gen_fig.set_title(get_display('פברוטים'), fontsize=14)
+fav_gen_barplot.set_title(get_display('Likes'), fontsize=14)
 
-# Gender retweet boxplot
-rt_gen_fig = sns.boxplot(x='job',
-                         y='avg_retweet_count',
-                         palette='Set3',
-                         hue='gender',
-                         showfliers=False,
-                         ax=gen_ax_traffic[1],
-                         data=PS[PS['gender'].notna()])
+# Remove the left legend
+gen_ax_barplot[0].legend([], [], frameon=False)
+
+# Retweets barplot
+rt_gen_barplot = sns.barplot(x='job',
+                             y='retweet_count',
+                             hue='gender',
+                             ax=gen_ax_barplot[1],
+                             data=PS[PS['gender'].notna()])
 
 # Set title to the gender retweets subplot
-rt_gen_fig.set_title(get_display('ריטוויטים'), fontsize=14)
+rt_gen_barplot.set_title(get_display('Retweets'), fontsize=14)
+
+# Modify slightly the legend
+gen_ax_barplot[1].legend(title='Gender')
 
 # Delete subplots axes titles
 for i in range(0, 2):
-    gen_ax_traffic[i].set_xlabel('')
-    gen_ax_traffic[i].set_ylabel('')
+    gen_ax_barplot[i].set_xlabel('')
+    gen_ax_barplot[i].set_ylabel('')
 
-# Set main title to the whole figure
-gen_fig_traffic.suptitle(get_display('פברוטים וריטוויטים - לפי מגדר'), fontsize=18)
+# Tight layout
+gen_fig_barplot.tight_layout()
 
-gen_fig_traffic.show(gen_ax_traffic)
+# Show the retweets figure
+gen_fig_barplot.show(gen_ax_barplot)
+
+# Export the retweets count figure
+gen_fig_barplot.savefig(r'Visualizations\Gender\Traffic Barplot ' + printDate + '.png')
+
+########################################       GENDER - TRAFFIC BOXPLOTS       ########################################
+
+
+# Set plotting area
+gen_fig_boxplot, gen_ax_boxplot = plt.subplots(1, 2)
+gen_fig_boxplot.set_size_inches(12, 6.7)
+
+# Gender favorites boxplot
+fav_gen_boxplot = sns.boxplot(x='job',
+                              y='favorite_count',
+                              hue='gender',
+                              showfliers=False,
+                              ax=gen_ax_boxplot[0],
+                              data=PS[PS['gender'].notna()])
+
+# Set title to the gender favorites subplot
+fav_gen_boxplot.set_title(get_display('פברוטים'), fontsize=14)
+
+# Gender retweet boxplot
+rt_gen_boxplot = sns.boxplot(x='job',
+                             y='retweet_count',
+                             hue='gender',
+                             showfliers=False,
+                             ax=gen_ax_boxplot[1],
+                             data=PS[PS['gender'].notna()])
+
+# Set title to the gender retweets subplot
+rt_gen_boxplot.set_title(get_display('ריטוויטים'), fontsize=14)
+
+# Delete subplots axes titles
+for i in range(0, 2):
+    gen_ax_boxplot[i].set_xlabel('')
+    gen_ax_boxplot[i].set_ylabel('')
+
+# Tight layout
+gen_fig_boxplot.tight_layout()
+
+# Show the retweets figure
+gen_fig_boxplot.show(gen_ax_boxplot)
+
+# Export the retweets count figure
+gen_fig_boxplot.savefig(r'Visualizations\Gender\Traffic Boxplot ' + printDate + '.png')
 
 
 #########################################       GENDER - WORD-CHAR COUNT       #########################################
@@ -567,3 +626,17 @@ df['hebrew_name'] = [get_display(df['hebrew_name'][i]) for i in df.index.tolist(
 # Drop rows with null text
 df = df[df['text'] != '']
 
+
+########################################             SCATTERPLOTS             ########################################
+
+# Insert Word count and char count columns
+PS['word_count'] = PS['text'].apply(lambda x: len(str(x).split(" ")))
+PS['char_count'] = PS['text'].apply(lambda x: sum(len(word) for word in str(x).split(" ")))
+
+# Scatterplot - Word count vs. favorites
+sns.scatterplot(x='char_count',
+                y='favorite_count',
+                data=PS)
+
+# Distplot - word and char count
+sns.distplot(PS['char_count'])
