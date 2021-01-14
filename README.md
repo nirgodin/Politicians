@@ -17,13 +17,12 @@ A clear, usefull and colourfull way to describe what's on the agenda is a wordcl
 # Favorites and retweets figuers
 
 <p align="center">
-  <img src="/Visulaizations/Favorites/Favorites%209-1-2021.png" width="100" />
-  <img src="/Visulaizations/Retweets/Retweets%209-1-2021.png" width="100" /> 
+  <img src="/Visualizations/Favorites/Favorites%209-1-2021.png" />
 </p>
 
 # Gender Analysis
 
 # Favorites and retweets revisited
 <p align="center">
-  <img src="/Visulaizations/Gedner/Traffic%20Barplot%2014-1-2021.png">
+  <img src="/Visualizations/Gedner/Traffic%20Barplot%2014-1-2021.png">
 </p>
