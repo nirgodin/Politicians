@@ -24,5 +24,5 @@ A clear, usefull and colourfull way to describe what's on the agenda is a wordcl
 
 # Favorites and retweets revisited
 <p align="center">
-  <img src="/Visualizations/Gender/Traffic%20Barplot%2014-1-2021.png" width="600">
+  <img src="/Visualizations/Gender/Traffic%20Boxplot%2015-1-2021.png" width="600">
 </p>
