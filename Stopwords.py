@@ -16,6 +16,7 @@ delete_lst = ['conjunction',
               'quantifier']
 
 stopwords_lst = stopwords_df['Undotted'][stopwords_df['POS'].isin(delete_lst)].tolist()
+verb_lst = stopwords_df['Undotted'][stopwords_df['POS'].isin(['verb', 'participle:verb'])].tolist()
 
 # Add more words to the stopwords_lst manually
 stopwords_manually = ['אני',
@@ -137,7 +138,19 @@ stopwords_manually = ['אני',
                       'פה',
                       'הלילה',
                       'הכי',
-                      'שלהם']
+                      'שלהם',
+                      'שאתה',
+                      'הו',
+                      'בוקר',
+                      'רבה',
+                      'שלכם',
+                      'מאז',
+                      'למי',
+                      'gtgt',
+                      'שבו',
+                      'ידי',
+                      'לישראל',
+                      'בישראל']
 
 stopwords_lst = stopwords_lst + stopwords_manually
 

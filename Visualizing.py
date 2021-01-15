@@ -4,13 +4,14 @@ from _datetime import datetime
 from wordcloud import WordCloud
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
+import re
 import seaborn as sns
 from bidi.algorithm import get_display
-from Stopwords import stopwords_lst
+from Stopwords import stopwords_lst, verb_lst
 from Functions import head_and_tail, word_count, df_punct, df_organizer
 
 # Week number and print data
-week = '2'
+week = '4'
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 
 # Import data
@@ -267,7 +268,8 @@ sentiment_ppl_fig.show(sentiment_ppl_ax)
 
 #######################################       GENDER - WORD USE DIFFERENCE       #######################################
 
-# PS['text'] = [re.sub(r'[A-Z,a-z,\d+]+', "", txt) for txt in PS['text']]
+
+PS['text'] = [re.sub(r'[A-Z,a-z,\d+,_,]+', "", txt) for txt in PS['text']]
 
 male_str = ' '.join(PS['text'][PS['gender'] == 'Male'])
 female_str = ' '.join(PS['text'][PS['gender'] == 'Female'])
@@ -287,7 +289,7 @@ gender_df = pd.merge(male_word_count,
 gender_df = gender_df.fillna(0)
 
 # Drop Stopwords
-gender_df = gender_df[~gender_df['word'].isin(stopwords_lst)].reset_index(drop=True)
+gender_df = gender_df[~gender_df['word'].isin(stopwords_lst + verb_lst)].reset_index(drop=True)
 
 # Apply the get_display on the word for the visualization
 gender_df['word'] = [get_display(word) for word in gender_df['word']]
@@ -360,6 +362,9 @@ gen_fig_barplot.savefig(r'Visualizations\Gender\Traffic Barplot ' + printDate + 
 
 ########################################       GENDER - TRAFFIC BOXPLOTS       ########################################
 
+BP = PS[(PS['favorite_count'] != 0) & (PS['retweet_count'] != 0)]
+BP['log_favorite_count'] = np.log(PS['favorite_count'])
+BP['log_retweet_count'] = np.log(PS['retweet_count'])
 
 # Set plotting area
 gen_fig_boxplot, gen_ax_boxplot = plt.subplots(1, 2)
@@ -367,30 +372,36 @@ gen_fig_boxplot.set_size_inches(12, 6.7)
 
 # Gender favorites boxplot
 fav_gen_boxplot = sns.boxplot(x='job',
-                              y='favorite_count',
+                              y='log_favorite_count',
                               hue='gender',
                               showfliers=False,
                               ax=gen_ax_boxplot[0],
-                              data=PS[PS['gender'].notna()])
+                              data=BP[BP['gender'].notna()])
+
+# Remove the left legend
+gen_ax_boxplot[0].legend([], [], frameon=False)
 
 # Set title to the gender favorites subplot
-fav_gen_boxplot.set_title(get_display('פברוטים'), fontsize=14)
+fav_gen_boxplot.set_title(get_display('Likes'), fontsize=14)
 
 # Gender retweet boxplot
 rt_gen_boxplot = sns.boxplot(x='job',
-                             y='retweet_count',
+                             y='log_retweet_count',
                              hue='gender',
                              showfliers=False,
                              ax=gen_ax_boxplot[1],
-                             data=PS[PS['gender'].notna()])
+                             data=BP[BP['gender'].notna()])
 
 # Set title to the gender retweets subplot
-rt_gen_boxplot.set_title(get_display('ריטוויטים'), fontsize=14)
+rt_gen_boxplot.set_title(get_display('Retweets'), fontsize=14)
 
 # Delete subplots axes titles
 for i in range(0, 2):
     gen_ax_boxplot[i].set_xlabel('')
     gen_ax_boxplot[i].set_ylabel('')
+
+# Modify slightly the legend
+gen_ax_boxplot[1].legend(title='Gender')
 
 # Tight layout
 gen_fig_boxplot.tight_layout()
