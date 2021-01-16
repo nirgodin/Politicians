@@ -72,6 +72,24 @@ def tweets_df(dct, startDate, endDate):
                                     7: 'favorite_count',
                                     8: 'text'})
 
+    # Append followers count column
+
+    # Create a dictionary with name column as keys and the number of followers as values
+    key_lst = Tweets['name'].unique().tolist()
+    fol_lst = []
+
+    # Creating the followers lst by iterating through the key lst and returning for each unique name its followers num
+    for name in key_lst:
+        userpage = api.get_user(politicians_dct[name][0])
+        fol = userpage.followers_count
+        fol_lst.append(fol)
+
+    # Zipping the two lists in two one dictionary
+    fol_dct = dict(zip(key_lst, fol_lst))
+
+    # Create the followers count column by mapping the name column with the followers dct
+    Tweets['followers_count'] = Tweets['name'].map(fol_dct)
+
     return Tweets
 
 
@@ -163,6 +181,7 @@ def df_organizer(df, sentiment='on'):
                                                        'organization': ['first'],
                                                        'gender': ['first', 'size'],
                                                        'hebrew_name': ['first'],
+                                                       'followers_count': ['first'],
                                                        'retweet_count': ['sum', 'mean'],
                                                        'favorite_count': ['sum', 'mean'],
                                                        'word_count': ['sum', 'mean'],
@@ -180,6 +199,7 @@ def df_organizer(df, sentiment='on'):
                                 'genderfirst': 'gender',
                                 'gendersize': 'tweet_count',
                                 'hebrew_namefirst': 'hebrew_name',
+                                'followers_countfirst': 'followers_count',
                                 'retweet_countsum': 'retweet_count',
                                 'retweet_countmean': 'avg_retweet_count',
                                 'favorite_countsum': 'favorite_count',
@@ -198,6 +218,7 @@ def df_organizer(df, sentiment='on'):
                                                        'organization': ['first'],
                                                        'gender': ['first', 'size'],
                                                        'hebrew_name': ['first'],
+                                                       'followers_count': ['first'],
                                                        'retweet_count': ['sum', 'mean'],
                                                        'favorite_count': ['sum', 'mean'],
                                                        'word_count': ['sum', 'mean'],
@@ -211,6 +232,7 @@ def df_organizer(df, sentiment='on'):
                                 'genderfirst': 'gender',
                                 'gendersize': 'tweet_count',
                                 'hebrew_namefirst': 'hebrew_name',
+                                'followers_countfirst': 'followers_count',
                                 'retweet_countsum': 'retweet_count',
                                 'retweet_countmean': 'avg_retweet_count',
                                 'favorite_countsum': 'favorite_count',

@@ -2,17 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f3dbd698-9409-4bea-9e93-9c979b87d9e2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Data/Raw/Weekly/Raw 15-1-2021.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Visualizations/Gender/Traffic Barplot 15-1-2021.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Visualizations/Gender/Traffic Boxplot 15-1-2021.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Visualizations/Wordclouds/Wordcloud 15-1-2021.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/Raw/Raw.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Raw/Raw.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dictionaries.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dictionaries.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Stopwords.py" beforeDir="false" afterPath="$PROJECT_DIR$/Stopwords.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Sentiment/Sentiment.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Sentiment/Sentiment.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/Functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Tweets Scraping.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tweets Scraping.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Visualizations/Gender/Traffic Barplot 14-1-2021.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Visualizing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Visualizing.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

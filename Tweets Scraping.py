@@ -96,3 +96,23 @@ Organized.to_csv(r'Data\Organized\Organized.csv', index=False)
 # PS = df_organizer(df_punct(PS))
 #
 # PS_raw = pd.read_csv(r'Data\Raw\Weekly\Raw 1-1-2021.csv')
+
+# politicians_dct.update(journalists_dct)
+#
+# PS = pd.read_csv(r'Data/Sentiment/Sentiment.csv')
+#
+# PS['name'][(PS['name'] == 'Shemesh')] = 'Shemesh_Lital'
+#
+# key_lst = PS['name'].unique().tolist()
+# val_lst = []
+#
+# for name in key_lst:
+#     user = api.get_user(politicians_dct[name][0])
+#     fol = user.followers_count
+#     val_lst.append(fol)
+#
+# fol_dct = dict(zip(key_lst, val_lst))
+#
+# PS['followers_count'] = PS['name'].map(fol_dct)
+#
+# PS.to_csv(r'Data/Sentiment/Sentiment.csv', index=False)
