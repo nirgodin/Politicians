@@ -15,7 +15,7 @@ A clear, usefull and colourfull way to describe what's on the agenda is a wordcl
 </p>
 
 ### *Popularity*
-A nice way (though clearly unperfect) to check who are the most popular politicians and journalists is by checking their average number of likes and retweets per tweet. This barplot, for example, lists the top 20 politicians and journalis and the average number of likes they got in the first three weeks of the elections.
+A nice way (though clearly unperfect) to check who are the most popular politicians and journalists is by checking their average number of likes and retweets per tweet. This barplot, for example, lists the top 20 politicians and journalists and the average number of likes they got in the first three weeks of the elections.
 
 <p align="center">
   <img src="/Visualizations/Favorites/Favorites%209-1-2021.png" width="600"/>
