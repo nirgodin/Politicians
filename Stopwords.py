@@ -150,7 +150,10 @@ stopwords_manually = ['אני',
                       'שבו',
                       'ידי',
                       'לישראל',
-                      'בישראל']
+                      'בישראל',
+                      'kann_news',
+                      'ynetales',
+                      'glzradio']
 
 stopwords_lst = stopwords_lst + stopwords_manually
 

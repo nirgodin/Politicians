@@ -80,7 +80,7 @@ def tweets_df(dct, startDate, endDate):
 
     # Creating the followers lst by iterating through the key lst and returning for each unique name its followers num
     for name in key_lst:
-        userpage = api.get_user(politicians_dct[name][0])
+        userpage = api.get_user(dct[name][0])
         fol = userpage.followers_count
         fol_lst.append(fol)
 
