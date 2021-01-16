@@ -22,7 +22,7 @@ A nice way (though clearly unperfect) to check who are the most popular politici
 </p>
 
 ### *Gender Relations*
-The data gathered in this project is clearly most useful for politics analisys, but can be used for other purposes. An extremely important and interesting one is gender relations. This boxplot - gathering data on the ~50k tweets from the first month of the elections, reveals a huge gender gap in likes and retweets between men and women.
+The data gathered in this project is clearly most useful for politics analisys, but can be used for other purposes. An extremely important and interesting one is gender relations. This boxplot - gathering data on the ~50k tweets from the first month of the elections - reveals a huge gender gap in likes and retweets between males and females.
 
 <p align="center">
   <img src="/Visualizations/Gender/Traffic%20Boxplot%2015-1-2021.png" width="600">
