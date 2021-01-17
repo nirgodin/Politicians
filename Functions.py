@@ -145,7 +145,7 @@ def df_sentiment(df):
         en_text = translator.translate(df['text'][i])
         sentiment_lst.append(sid.polarity_scores(en_text))
 
-        if i % 10 == 0:
+        if i % 50 == 0:
             time.sleep(2)
         else:
             time.sleep(0.5)

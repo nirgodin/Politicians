@@ -53,7 +53,7 @@ PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw 8-1-2021.csv')
 PS_raw = df_punct(PS_raw)
 
 # Compute sentiment and export
-PS_sentiment = df_sentiment(PS_raw)
+PS_sentiment = df_sentiment(PS_raw.head(5000))
 
 # Export the sentiment dataframe
 PS_sentiment.to_csv(r'Data\Sentiment\Weekly\Sentiment ' + printDate + '.csv', index=False)
@@ -116,3 +116,5 @@ Organized.to_csv(r'Data\Organized\Organized.csv', index=False)
 # PS['followers_count'] = PS['name'].map(fol_dct)
 #
 # PS.to_csv(r'Data/Sentiment/Sentiment.csv', index=False)
+
+len(PS['name'][(PS['gender'] == 'Male') & (PS['job'] == 'Journalist')].unique())
