@@ -1,5 +1,5 @@
 from instagramy import InstagramUser
-
+import instagramy
 
 def instush_df(dct):
     # Import relevant libraries

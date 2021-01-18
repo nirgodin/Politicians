@@ -48,15 +48,22 @@ PS_raw = PS_raw[Raw.columns]
 Raw = pd.concat([Raw, PS_raw])
 Raw.to_csv(r'Data\Raw\Raw.csv', index=False)
 
-PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw 8-1-2021.csv')
+PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw 15-1-2021.csv')
 # Delete punctuation
 PS_raw = df_punct(PS_raw)
 
 # Compute sentiment and export
-PS_sentiment = df_sentiment(PS_raw.head(5000))
+PS_sentiment1 = df_sentiment(PS_raw.head(5000))
+PS_sentiment4 = df_sentiment(PS_raw.iloc[15000:len(PS_raw)])
+
+PS_sentiment = pd.concat([PS_sentiment1,
+                          PS_sentiment2,
+                          PS_sentiment3,
+                          PS_sentiment4])
 
 # Export the sentiment dataframe
 PS_sentiment.to_csv(r'Data\Sentiment\Weekly\Sentiment ' + printDate + '.csv', index=False)
+# PS_sentiment.to_csv(r'Data\Sentiment\Weekly\Sentiment ' + '8-1-2021' + '.csv', index=False)
 
 # Appending by dfs concatenation the data to the csv file containing data from all dates
 # Importing the full dataframe
@@ -88,33 +95,22 @@ Organized.to_csv(r'Data\Organized\Organized.csv', index=False)
 
 
 ##########################################              SKETCH          #############################################
-# last_week = pd.read_csv(r'Data\Raw\Weekly\Raw 25-12-2020.csv')
-# this_week = pd.read_csv(r'Data\Raw\Weekly\Raw 1-1-2021.csv')
-#
-# PS = pd.concat([last_week, this_week])
-#
-# PS = df_organizer(df_punct(PS))
-#
-# PS_raw = pd.read_csv(r'Data\Raw\Weekly\Raw 1-1-2021.csv')
 
-# politicians_dct.update(journalists_dct)
-#
-# PS = pd.read_csv(r'Data/Sentiment/Sentiment.csv')
-#
-# PS['name'][(PS['name'] == 'Shemesh')] = 'Shemesh_Lital'
+# PS = pd.read_csv(r'Data/Raw/Raw.csv')
 #
 # key_lst = PS['name'].unique().tolist()
 # val_lst = []
 #
 # for name in key_lst:
-#     user = api.get_user(politicians_dct[name][0])
-#     fol = user.followers_count
-#     val_lst.append(fol)
+#     try:
+#         rank = politicians_dct[name][4]
+#     except KeyError:
+#         rank = np.nan
+#     val_lst.append(rank)
 #
-# fol_dct = dict(zip(key_lst, val_lst))
 #
-# PS['followers_count'] = PS['name'].map(fol_dct)
+# rank_dct = dict(zip(key_lst, val_lst))
 #
-# PS.to_csv(r'Data/Sentiment/Sentiment.csv', index=False)
-
-len(PS['name'][(PS['gender'] == 'Male') & (PS['job'] == 'Journalist')].unique())
+# PS['ranking'] = PS['name'].map(rank_dct)
+#
+# PS.to_csv(r'Data/Raw/Raw.csv', index=False)
