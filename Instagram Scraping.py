@@ -74,13 +74,18 @@ politicians_dct = {'Abutbul': ['mkabutbulmoshe', 'Shas', 'Male', 'אבוטבול
 
 lala = instush_df(politicians_dct)
 
+from instascrape import *
+from selenium import webdriver
+import pandas as pd
+from bs4 import BeautifulSoup
 
-bibi = InstagramUser('b.netanyahu')
+# Setting driver
+driver = webdriver.Chrome(r'C:\Users\nirgo\PycharmProjects\Fantasy\Browsers\chromedriver.exe')
+driver.get('https://instagram.com')
+sleep(5)
 
-
-p = bibi.posts
-
-# return list of dicts
-posts = user.get_posts_details()
-
-p[0]['likes']
+b = Profile("ron.huldai")
+# pst = Post('https://www.instagram.com/p/CKMJE5hhEhC/').to_dict()
+b.scrape()
+posts = b.get_posts(webdriver=driver)
+posts_df = pd.DataFrame([post.to_dict() for post in posts])

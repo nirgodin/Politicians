@@ -290,3 +290,38 @@ def word_count(str):
     df = df.sort_values(by='count', ascending=False).reset_index(drop=True)
 
     return df
+
+
+def to_datetime(pd_series):
+
+
+    # Import datetime package
+    from datetime import datetime
+
+    # Create empty list to append values to
+    date_lst = []
+
+    # Iterate through the pandas series and return the date as a datetime object no matter is original format
+    for date in pd_series:
+        try:
+            d = datetime.strptime(date, '%d/%m/%Y %H:%M')
+        except ValueError:
+            pass
+            try:
+                d = datetime.strptime(date, '%d/%m/%Y %H:%M:%S')
+            except ValueError:
+                pass
+                try:
+                    d = datetime.strptime(date, '%d-%m-%Y %H:%M')
+                except ValueError:
+                    pass
+                    try:
+                        d = datetime.strptime(date, '%d-%m-%Y %H:%M:%S')
+                    except ValueError:
+                        d = datetime.strptime(date, '%Y-%m-%d %H:%M:%S')
+
+    # Append the datetime object to the list
+        date_lst.append(d)
+
+    # Return list of datetimes
+    return date_lst

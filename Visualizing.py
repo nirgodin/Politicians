@@ -28,7 +28,7 @@ PS = df_organizer(PS, sentiment='off')
 
 # # Creating an organization df, which will be useful for some of the visualizations
 # Organizations = PS.groupby(['organization'], as_index=False).agg({'job': ['first'],
-#                                                                   'retweet_count': ['sum', 'mean'],
+#                                                                   'refollowers_count': ['sum', 'mean'],
 #                                                                   'favorite_count': ['sum', 'mean'],
 #                                                                   'word_count': ['sum', 'mean'],
 #                                                                   'char_count': ['sum', 'mean'],
@@ -41,8 +41,8 @@ PS = df_organizer(PS, sentiment='off')
 # # Replace column names
 # Organizations.columns = list(map(''.join, Organizations.columns.values))
 # Organizations = Organizations.rename(columns={'jobfirst': 'job',
-#                                               'retweet_countsum': 'retweet_count',
-#                                               'retweet_countmean': 'avg_retweet_count',
+#                                               'refollowers_countsum': 'refollowers_count',
+#                                               'refollowers_countmean': 'avg_refollowers_count',
 #                                               'favorite_countsum': 'favorite_count',
 #                                               'favorite_countmean': 'avg_favorite_count',
 #                                               'word_countsum': 'word_count',
@@ -96,23 +96,23 @@ twt_fig, twt_ax = plt.subplots(1, 2)
 twt_fig.set_size_inches(12, 6.7)
 
 # Plot journalist figure
-j_twt_fig = sns.barplot(x='tweet_count',
+j_twt_fig = sns.barplot(x='followers_count',
                         y='hebrew_name',
                         palette='ch:.25',
                         edgecolor='.6',
                         ax=twt_ax[0],
-                        data=PS[PS['job'] == 'Journalist'].sort_values(by='tweet_count',
+                        data=PS[PS['job'] == 'Journalist'].sort_values(by='followers_count',
                                                                        ascending=False).head(20))
 
 # Set title to journalist figure
 j_twt_fig.set_title(get_display('עיתונאים'), fontsize=14)
 
-p_twt_fig = sns.barplot(x='tweet_count',
+p_twt_fig = sns.barplot(x='followers_count',
                         y='hebrew_name',
                         palette='ch:.25',
                         edgecolor='.6',
                         ax=twt_ax[1],
-                        data=PS[PS['job'] == 'Politician'].sort_values(by='tweet_count',
+                        data=PS[PS['job'] == 'Politician'].sort_values(by='followers_count',
                                                                        ascending=False).head(20))
 
 # Set title to politicians figure
@@ -131,6 +131,54 @@ twt_fig.show(twt_ax)
 
 # Export the tweet count figure
 twt_fig.savefig(r'Visualizations\Tweets\Tweets ' + printDate + '.png')
+
+
+################################################      FOLLOWERS      ################################################
+
+
+# Transform followers count to thosands
+PS['followers_count'] = PS['followers_count'].apply(lambda x: x/1000)
+
+# Set plotting area
+flw_fig, flw_ax = plt.subplots(1, 2)
+flw_fig.set_size_inches(12, 6.7)
+
+# Plot journalist figure
+j_flw_fig = sns.barplot(x=('followers_count'),
+                        y='hebrew_name',
+                        palette='ch:.25',
+                        edgecolor='.6',
+                        ax=flw_ax[0],
+                        data=PS[PS['job'] == 'Journalist'].sort_values(by='followers_count',
+                                                                       ascending=False).head(20))
+
+# Set title to journalist figure
+j_flw_fig.set_title(get_display('עיתונאים'), fontsize=14)
+
+p_flw_fig = sns.barplot(x='followers_count',
+                        y='hebrew_name',
+                        palette='ch:.25',
+                        edgecolor='.6',
+                        ax=flw_ax[1],
+                        data=PS[PS['job'] == 'Politician'].sort_values(by='followers_count',
+                                                                       ascending=False).head(20))
+
+# Set title to politicians figure
+p_flw_fig.set_title(get_display('פוליטיקאים'), fontsize=14)
+
+# Delete subplots axes titles
+for i in range(0, 2):
+    flw_ax[i].set_xlabel(get_display('מספר עוקבים'))
+    flw_ax[i].set_ylabel('')
+
+# Tight layout
+flw_fig.tight_layout()
+
+# Show the tweet count figure
+flw_fig.show(flw_ax)
+
+# Export the tweet count figure
+flw_fig.savefig(r'Visualizations\Tweets\Tweets ' + printDate + '.png')
 
 
 #################################################      FAVORITES      #################################################
@@ -188,23 +236,23 @@ rt_fig, rt_ax = plt.subplots(1, 2)
 rt_fig.set_size_inches(12, 6.7)
 
 # Plot journalist figure
-j_rt_fig = sns.barplot(x='avg_retweet_count',
+j_rt_fig = sns.barplot(x='avg_refollowers_count',
                        y='hebrew_name',
                        palette='ch:.25',
                        edgecolor='.6',
                        ax=rt_ax[0],
-                       data=PS[PS['job'] == 'Journalist'].sort_values(by='avg_retweet_count',
+                       data=PS[PS['job'] == 'Journalist'].sort_values(by='avg_refollowers_count',
                                                                       ascending=False).head(20))
 
 # Set title to journalist figure
 j_rt_fig.set_title(get_display('עיתונאים'), fontsize=14)
 
-p_rt_fig = sns.barplot(x='avg_retweet_count',
+p_rt_fig = sns.barplot(x='avg_refollowers_count',
                        y='hebrew_name',
                        palette='ch:.25',
                        edgecolor='.6',
                        ax=rt_ax[1],
-                       data=PS[PS['job'] == 'Politician'].sort_values(by='avg_retweet_count',
+                       data=PS[PS['job'] == 'Politician'].sort_values(by='avg_refollowers_count',
                                                                       ascending=False).head(20))
 
 # Set main title to politicians figure
@@ -335,7 +383,7 @@ gen_ax_barplot[0].legend([], [], frameon=False)
 
 # Retweets barplot
 rt_gen_barplot = sns.barplot(x='job',
-                             y='retweet_count',
+                             y='refollowers_count',
                              hue='gender',
                              ax=gen_ax_barplot[1],
                              data=PS[PS['gender'].notna()])
@@ -362,9 +410,9 @@ gen_fig_barplot.savefig(r'Visualizations\Gender\Traffic Barplot ' + printDate + 
 
 ########################################       GENDER - TRAFFIC BOXPLOTS       ########################################
 
-BP = PS[(PS['favorite_count'] != 0) & (PS['retweet_count'] != 0)]
+BP = PS[(PS['favorite_count'] != 0) & (PS['refollowers_count'] != 0)]
 BP['log_favorite_count'] = np.log(PS['favorite_count'])
-BP['log_retweet_count'] = np.log(PS['retweet_count'])
+BP['log_refollowers_count'] = np.log(PS['refollowers_count'])
 
 # Set plotting area
 gen_fig_boxplot, gen_ax_boxplot = plt.subplots(1, 2)
@@ -386,7 +434,7 @@ fav_gen_boxplot.set_title(get_display('Likes'), fontsize=14)
 
 # Gender retweet boxplot
 rt_gen_boxplot = sns.boxplot(x='job',
-                             y='log_retweet_count',
+                             y='log_refollowers_count',
                              hue='gender',
                              showfliers=False,
                              ax=gen_ax_boxplot[1],
@@ -456,14 +504,14 @@ gen_fig_snt = sns.boxplot(x='job',
 
 # Organizations Analysis
 Organizations = PS.groupby(['organization'], as_index=False).agg({'job': ['first'],
-                                                                  'tweet_count': ['sum'],
+                                                                  'followers_count': ['sum'],
                                                                   'word_count': ['sum'],
                                                                   'char_count': ['sum'],
                                                                   'text': [' '.join]})
 
 Organizations.columns = list(map(''.join, Organizations.columns.values))
 Organizations = Organizations.rename(columns={'jobfirst': 'job',
-                                              'tweet_countsum': 'tweet_count',
+                                              'followers_countsum': 'followers_count',
                                               'word_countsum': 'word_count',
                                               'char_countsum': 'char_count',
                                               'textjoin': 'text'})
@@ -497,7 +545,7 @@ sns.boxplot(x='job',
 
 # Party retweet boxplot
 sns.boxplot(x='job',
-            y='avg_retweet_count',
+            y='avg_refollowers_count',
             palette='Set3',
             hue='organization',
             showfliers=False,
@@ -529,7 +577,7 @@ sns.boxplot(x='job',
 
 # Media retweet boxplot
 sns.boxplot(x='job',
-            y='avg_retweet_count',
+            y='avg_refollowers_count',
             palette='Set3',
             hue='organization',
             showfliers=False,
@@ -628,8 +676,8 @@ sns.lineplot(x='date',
 
 
 # Compute traffic and average traffic count
-df['traffic_count'] = df['retweet_count'] + df['favorite_count']
-df['avg_traffic_count'] = df['traffic_count'] / df['tweet_count']
+df['traffic_count'] = df['refollowers_count'] + df['favorite_count']
+df['avg_traffic_count'] = df['traffic_count'] / df['followers_count']
 
 # Apply the get_display function on all the hebew names in the dataframe
 df['hebrew_name'] = [get_display(df['hebrew_name'][i]) for i in df.index.tolist()]

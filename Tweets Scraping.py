@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
-from _datetime import datetime
+from _datetime import datetime, timedelta
 import tweepy
 import re
 from Credentials import consumer_key, consumer_secret, access_token, access_token_secret
 from Dictionaries import politicians_dct, journalists_dct, media_dct, parties_dct
-from Functions import tweets_df, df_punct, df_sentiment, df_organizer
+from Functions import tweets_df, df_punct, df_sentiment, df_organizer, to_datetime
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from google_trans_new import google_translator
 import nltk
@@ -17,7 +17,6 @@ startDate = datetime(2021, 1, 8)
 endDate = datetime(2021, 1, 15)
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 week = '3'
-
 
 # Create four dataframes, for the four types of twitter figures - Politicians, Journalists, Media and Parties
 Politicians = tweets_df(politicians_dct, startDate, endDate)
@@ -54,6 +53,8 @@ PS_raw = df_punct(PS_raw)
 
 # Compute sentiment and export
 PS_sentiment1 = df_sentiment(PS_raw.head(5000))
+PS_sentiment2 = df_sentiment(PS_raw.iloc[5000:10000])
+PS_sentiment3 = df_sentiment(PS_raw.iloc[10000:15000])
 PS_sentiment4 = df_sentiment(PS_raw.iloc[15000:len(PS_raw)])
 
 PS_sentiment = pd.concat([PS_sentiment1,
@@ -96,8 +97,15 @@ Organized.to_csv(r'Data\Organized\Organized.csv', index=False)
 
 ##########################################              SKETCH          #############################################
 
-# PS = pd.read_csv(r'Data/Raw/Raw.csv')
-#
+PS = pd.read_csv(r'Data/Raw/Raw.csv')
+
+
+
+# RANK
+
+
+
+
 # key_lst = PS['name'].unique().tolist()
 # val_lst = []
 #
@@ -108,9 +116,38 @@ Organized.to_csv(r'Data\Organized\Organized.csv', index=False)
 #         rank = np.nan
 #     val_lst.append(rank)
 #
-#
+# politicians_dct['Bennett'][5] -
 # rank_dct = dict(zip(key_lst, val_lst))
 #
 # PS['ranking'] = PS['name'].map(rank_dct)
 #
 # PS.to_csv(r'Data/Raw/Raw.csv', index=False)
+#
+# abou = datetime.strptime('19/6/1976', '%d/%m/%Y')
+# ab = datetime.now() - abou
+#
+# round(ab.days/365, 0)
+
+
+
+# AGE
+
+key_lst = PS['name'].unique().tolist()
+val_lst = []
+
+for name in key_lst:
+    try:
+        dob = datetime.strptime(politicians_dct[name][5], '%d/%m/%Y')
+    except (KeyError, IndexError) as e:
+        dob = np.nan
+    val_lst.append(dob)
+
+dob_dct = dict(zip(key_lst, val_lst))
+
+PS['created_datetime'] = to_datetime(PS['created_at'])
+PS['dob'] = PS['name'].map(dob_dct)
+PS['age'] = PS['created_datetime'] - PS['dob']
+PS['age'] = PS['age'].apply(lambda x: round((x.days)/365, 0))
+
+
+datetime.strptime(PS['created_at'][0], '%d/%m/%Y %H:%M') - datetime.strptime('19/6/1976', '%d/%m/%Y')
