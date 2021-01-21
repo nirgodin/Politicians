@@ -1,3 +1,4 @@
+from Credentials import mail, password
 from instagramy import InstagramUser
 import instagramy
 
@@ -77,12 +78,34 @@ lala = instush_df(politicians_dct)
 from instascrape import *
 from selenium import webdriver
 import pandas as pd
+from time import sleep
 from bs4 import BeautifulSoup
 
-# Setting driver
+# Setting driver and enteting Instagram
 driver = webdriver.Chrome(r'C:\Users\nirgo\PycharmProjects\Fantasy\Browsers\chromedriver.exe')
 driver.get('https://instagram.com')
 sleep(5)
+
+# Set mail and password fields
+mail_field = driver.find_element_by_xpath('/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[1]/div/label/input')
+pass_field = driver.find_element_by_xpath('/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[2]/div/label/input')
+login = driver.find_element_by_xpath('/html/body/div[1]/section/main/article/div[2]/div[1]/div/form/div/div[3]/button/div')
+
+# Fill the field with the mail and password
+mail_field.send_keys(mail)
+pass_field.send_keys(password)
+
+# Login by clicking
+login.click()
+
+# Continue to the real homepage by dismissing instagram suggestions
+notnow1 = driver.find_element_by_xpath('/html/body/div[1]/section/main/div/div/div/div/button')
+notnow1.click()
+sleep(5)
+notnow2 = driver.find_element_by_xpath('/html/body/div[3]/div/div/div/div[3]/button[2]')
+notnow2.click()
+sleep(5)
+
 
 b = Profile("ron.huldai")
 # pst = Post('https://www.instagram.com/p/CKMJE5hhEhC/').to_dict()

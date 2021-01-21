@@ -1,11 +1,4 @@
-import tweepy
 from Credentials import consumer_key, consumer_secret, access_token, access_token_secret
-
-# Setting the necessary twitter developer credentials to use the tweepy package and scrape tweets
-# These are set as environment variables
-auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(access_token, access_token_secret)
-api = tweepy.API(auth, wait_on_rate_limit=True)
 
 
 ################################################        FUNCTIONS        ################################################
@@ -18,7 +11,15 @@ def tweets_df(dct, startDate, endDate):
 
     # Necessary libraries
     import pandas as pd
+    import numpy as np
     import time
+    import tweepy
+
+    # Setting the necessary twitter developer credentials to use the tweepy package and scrape tweets
+    # These are set as environment variables
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_token, access_token_secret)
+    api = tweepy.API(auth, wait_on_rate_limit=True)
 
     Tweets = pd.DataFrame()
     for user in dct.keys():
@@ -74,21 +75,33 @@ def tweets_df(dct, startDate, endDate):
 
     # Append followers count column
 
-    # Create a dictionary with name column as keys and the number of followers as values
+    # Create two dictionaries with name column as keys: one - with the number of followers as values ;
+    # two - with the twitter account join date as values
     key_lst = Tweets['name'].unique().tolist()
     fol_lst = []
+    created_lst = []
 
-    # Creating the followers lst by iterating through the key lst and returning for each unique name its followers num
+    # Creating the followers lst join date of each user
+    # This is done by iterating through the key lst and returning for each unique name its followers num
+    # The try-except clause is used in case one of the users deleted his user from twitter
     for name in key_lst:
-        userpage = api.get_user(dct[name][0])
-        fol = userpage.followers_count
+        try:
+            userpage = api.get_user(dct[name][0])
+            fol = userpage.followers_count
+            created = userpage.created_at
+        except tweepy.error.TweepError:
+            fol = np.nan
+            created = np.nan
         fol_lst.append(fol)
+        created_lst.append(created)
 
-    # Zipping the two lists in two one dictionary
+    # Zipping the lists into dictionaries
     fol_dct = dict(zip(key_lst, fol_lst))
+    created_dct = dict(zip(key_lst, created_lst))
 
-    # Create the followers count column by mapping the name column with the followers dct
+    # Adding the columns to the Tweets df by mapping the name column with the dcts
     Tweets['followers_count'] = Tweets['name'].map(fol_dct)
+    Tweets['join_date'] = Tweets['name'].map(created_dct)
 
     return Tweets
 

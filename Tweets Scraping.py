@@ -4,7 +4,7 @@ from _datetime import datetime, timedelta
 import tweepy
 import re
 from Credentials import consumer_key, consumer_secret, access_token, access_token_secret
-from Dictionaries import politicians_dct, journalists_dct, media_dct, parties_dct
+from Dictionaries import politicians_dct, journalists_dct, media_dct, parties_dct, seats_dct
 from Functions import tweets_df, df_punct, df_sentiment, df_organizer, to_datetime
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 from google_trans_new import google_translator
@@ -97,15 +97,29 @@ Organized.to_csv(r'Data\Organized\Organized.csv', index=False)
 
 ##########################################              SKETCH          #############################################
 
-PS = pd.read_csv(r'Data/Raw/Raw.csv')
-
-
-
-# RANK
-
-
-
-
+# key_lst = PS['name'].unique().tolist()
+# created_lst = []
+#
+# # politicians_dct.update(parties_dct)
+#
+# # Creating the followers lst by iterating through the key lst and returning for each unique name its followers num
+# for name in key_lst:
+#     userpage = api.get_user(politicians_dct[name][0])
+#     created = userpage.created_at
+#     created_lst.append(created)
+#
+# # Zipping the two lists in two one dictionary
+# created_dct = dict(zip(key_lst, created_lst))
+#
+# # Create the followers count column by mapping the name column with the followers dct
+# PS['join_date'] = PS['name'].map(created_dct)
+#
+# PS.to_csv(r'Data/Raw/Raw.csv', index=False)
+#
+# # PS = PS.drop(columns='ranking')
+#
+# # RANK
+#
 # key_lst = PS['name'].unique().tolist()
 # val_lst = []
 #
@@ -116,12 +130,9 @@ PS = pd.read_csv(r'Data/Raw/Raw.csv')
 #         rank = np.nan
 #     val_lst.append(rank)
 #
-# politicians_dct['Bennett'][5] -
 # rank_dct = dict(zip(key_lst, val_lst))
 #
 # PS['ranking'] = PS['name'].map(rank_dct)
-#
-# PS.to_csv(r'Data/Raw/Raw.csv', index=False)
 #
 # abou = datetime.strptime('19/6/1976', '%d/%m/%Y')
 # ab = datetime.now() - abou
@@ -129,25 +140,60 @@ PS = pd.read_csv(r'Data/Raw/Raw.csv')
 # round(ab.days/365, 0)
 
 
+# PS = pd.read_csv(r'Data/Sentiment/Weekly/Sentiment 8-1-2021.csv')
+
 
 # AGE
 
-key_lst = PS['name'].unique().tolist()
-val_lst = []
+# dob_lst = []
+#
+# for name in key_lst:
+#     try:
+#         dob = datetime.strptime(politicians_dct[name][5], '%d/%m/%Y')
+#     except (KeyError, IndexError) as e:
+#         dob = np.nan
+#     dob_lst.append(dob)
+#
+# dob_dct = dict(zip(key_lst, dob_lst))
+#
+# PS['created_at'] = to_datetime(PS['created_at'])
+# PS['dob'] = PS['name'].map(dob_dct)
+# PS['age'] = PS['created_at'] - PS['dob']
+# PS['age'] = PS['age'].apply(lambda x: round((x.days)/365, 0))
 
-for name in key_lst:
-    try:
-        dob = datetime.strptime(politicians_dct[name][5], '%d/%m/%Y')
-    except (KeyError, IndexError) as e:
-        dob = np.nan
-    val_lst.append(dob)
-
-dob_dct = dict(zip(key_lst, val_lst))
-
-PS['created_datetime'] = to_datetime(PS['created_at'])
-PS['dob'] = PS['name'].map(dob_dct)
-PS['age'] = PS['created_datetime'] - PS['dob']
-PS['age'] = PS['age'].apply(lambda x: round((x.days)/365, 0))
 
 
-datetime.strptime(PS['created_at'][0], '%d/%m/%Y %H:%M') - datetime.strptime('19/6/1976', '%d/%m/%Y')
+
+# POLITICAL POWER
+
+# from Dictionaries import seats_dct
+# # import shap
+#
+# power_lst = []
+# for name in politicians_dct.keys():
+#     try:
+#         party = politicians_dct[name][1]
+#         seats = seats_dct[party]
+#         rank = politicians_dct[name][4]
+#         power = seats/rank
+#     except KeyError:
+#         power = np.nan
+#     power_lst.append(power)
+#
+# power_dct = dict(zip(politicians_dct.keys(), power_lst))
+#
+# PS['power'] = PS['name'].map(power_dct)
+#
+# PS.to_csv(r'Data/Regression/Regression.csv', index=False)
+
+
+
+
+# Prime minister column
+#
+# PS['pm'] = [1 if name == 'Netanyahu' else 0 for name in PS['name']]
+#
+#
+#
+# # Minister column
+# PS['minister'] = [1 if name in minister_lst else 0 for name in PS['name']]
