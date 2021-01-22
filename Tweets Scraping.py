@@ -13,8 +13,8 @@ import nltk
 
 # Setting start and end date, to scrape tweets in between. Also, setting week number for data export and import
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
-startDate = datetime(2021, 1, 8)
-endDate = datetime(2021, 1, 15)
+startDate = datetime(2021, 1, 15)
+endDate = datetime(2021, 1, 22)
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 week = '3'
 
@@ -47,20 +47,20 @@ PS_raw = PS_raw[Raw.columns]
 Raw = pd.concat([Raw, PS_raw])
 Raw.to_csv(r'Data\Raw\Raw.csv', index=False)
 
-PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw 15-1-2021.csv')
+# PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw 15-1-2021.csv')
 # Delete punctuation
 PS_raw = df_punct(PS_raw)
 
-# Compute sentiment and export
-PS_sentiment1 = df_sentiment(PS_raw.head(5000))
-PS_sentiment2 = df_sentiment(PS_raw.iloc[5000:10000])
-PS_sentiment3 = df_sentiment(PS_raw.iloc[10000:15000])
-PS_sentiment4 = df_sentiment(PS_raw.iloc[15000:len(PS_raw)])
-
-PS_sentiment = pd.concat([PS_sentiment1,
-                          PS_sentiment2,
-                          PS_sentiment3,
-                          PS_sentiment4])
+# # Compute sentiment and export
+# PS_sentiment1 = df_sentiment(PS_raw.head(5000))
+# PS_sentiment2 = df_sentiment(PS_raw.iloc[5000:10000])
+# PS_sentiment3 = df_sentiment(PS_raw.iloc[10000:15000])
+# PS_sentiment4 = df_sentiment(PS_raw.iloc[15000:len(PS_raw)])
+#
+# PS_sentiment = pd.concat([PS_sentiment1,
+#                           PS_sentiment2,
+#                           PS_sentiment3,
+#                           PS_sentiment4])
 
 # Export the sentiment dataframe
 PS_sentiment.to_csv(r'Data\Sentiment\Weekly\Sentiment ' + printDate + '.csv', index=False)
