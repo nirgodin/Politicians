@@ -2,23 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f3dbd698-9409-4bea-9e93-9c979b87d9e2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Other/FreeSansBold.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Other/Mila - Stopwords.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Dictionaries.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Dictionaries.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Stopwords.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Stopwords.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Tweets Scraping.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Tweets Scraping.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Visualizing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Visualizing.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Raw/Raw.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Raw/Raw.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Raw/Weekly/Raw 1-1-2021.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Raw/Weekly/Raw 1-1-2021.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Raw/Weekly/Raw 15-1-2021.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Raw/Weekly/Raw 15-1-2021.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Raw/Weekly/Raw 8-1-2021.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Raw/Weekly/Raw 8-1-2021.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/Sentiment/Sentiment.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Sentiment/Sentiment.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dictionaries.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FreeSansBold.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Functions.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Instagram Dictionaries.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Instagram Scraping.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Learning.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mila - Stopwords.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Stopwords.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tweets Scraping.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Visualizations/Wordclouds/Wordcloud 22-1-2021.png" beforeDir="false" afterPath="$PROJECT_DIR$/Visualizations/Wordclouds/Wordcloud 22-1-2021.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Visualizing.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/debug.log" beforeDir="false" afterPath="$PROJECT_DIR$/debug.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Sentiment/Weekly/Sentiment 1-1-2021.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Sentiment/Weekly/Sentiment 1-1-2021.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

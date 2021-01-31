@@ -6,8 +6,8 @@ from Code.Functions import tweets_df, df_punct, df_sentiment, df_organizer, to_d
 
 # Setting start and end date, to scrape tweets in between. Also, setting week number for data export and import
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
-startDate = datetime(2021, 1, 15)
-endDate = datetime(2021, 1, 22)
+startDate = datetime(2021, 1, 22)
+endDate = datetime(2021, 1, 29)
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 week = '3'
 
@@ -39,26 +39,10 @@ PS_raw = PS_raw[Raw.columns]
 # Concatenating and saving
 Raw = pd.concat([Raw, PS_raw])
 Raw.to_csv(r'Data\Raw\Raw.csv', index=False)
-Raw.to_csv(r'C:\Users\nirgo\Documents\GitHub\Gender Gap\Data\Raw.csv', index=False)
 
-PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw 22-1-2021.csv')
-# Delete punctuation
-PS_raw = df_punct(PS_raw)
-# PS_raw = PS_raw[PS_raw['text'] != '']
 
-# Compute sentiment and export
-PS_sentiment1 = df_sentiment(PS_raw.head(5000))
-# PS_sentiment2 = df_sentiment(PS_raw.iloc[5000:10000])
-# PS_sentiment3 = df_sentiment(PS_raw.iloc[10000:15000])
-# PS_sentiment4 = df_sentiment(PS_raw.iloc[15000:len(PS_raw)])
-PS_sentiment = pd.concat([PS_sentiment1,
-                          PS_sentiment2,
-                          PS_sentiment3,
-                          PS_sentiment4])
+###########################              SKETCH                   ########################
 
-# Export the sentiment dataframe
-PS_sentiment.to_csv(r'Data\Sentiment\Weekly\Sentiment ' + printDate + '.csv', index=False)
-PS_sentiment.to_csv(r'Data\Sentiment\Weekly\Sentiment ' + '22-1-2021' + '.csv', index=False)
 
 # Appending by dfs concatenation the data to the csv file containing data from all dates
 # Importing the full dataframe
@@ -71,19 +55,27 @@ PS_sentiment = PS_sentiment[Sentiment.columns]
 Sentiment = pd.concat([Sentiment, PS_sentiment])
 Sentiment.to_csv(r'Data\Sentiment\Sentiment.csv', index=False)
 
-# Organize the dataframe to final analysis and visualization
-PS = df_organizer(PS_sentiment)
+# PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw 29-1-2021.csv')
+#
+# # Delete punctuation
+# PS_raw = df_punct(PS_raw)
+#
+# # Compute sentiment and export
+# PS_sentiment1 = df_sentiment(PS_raw.head(5000))
+# PS_sentiment2 = df_sentiment(PS_raw.iloc[5000:10000])
+# PS_sentiment3 = df_sentiment(PS_raw.iloc[10000:15000])
+# PS_sentiment4 = df_sentiment(PS_raw.iloc[15000:len(PS_raw)])
+# PS_sentiment = pd.concat([PS_sentiment1,
+#                           PS_sentiment2,
+#                           PS_sentiment3,
+#                           PS_sentiment4])
+#
+# ##############
+# # PS_sentiment1 = pd.read_csv(r'Data\Sentiment\Weekly\Sentiment 29-1-2021.csv')
+# #
+# # PS_sentiment = pd.concat([PS_sentiment1,
+# #                           PS_sentiment2])
+# #
+# # # Export the sentiment dataframe
+# PS_sentiment.to_csv(r'Data\Sentiment\Weekly\Sentiment 29-1-2021.csv', index=False)
 
-# Export dataframe
-PS.to_csv(r'Data\Organized\Weekly\Organized ' + printDate + '.csv', index=False)
-
-# Appending by dfs concatenation the data to the csv file containing data from all dates
-# Importing the full dataframe
-Organized = pd.read_csv(r'Data\Organized\Organized.csv')
-
-# Verifying the currently scraped dataframe is in the same column order as the final data one
-PS = PS[Organized.columns]
-
-# Concatenating and saving
-Organized = pd.concat([Organized, PS])
-Organized.to_csv(r'Data\Organized\Organized.csv', index=False)

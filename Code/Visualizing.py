@@ -6,9 +6,10 @@ from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 import re
 import seaborn as sns
+import demoji
 from bidi.algorithm import get_display
-from Stopwords import stopwords_lst, verb_lst
-from Functions import head_and_tail, word_count, df_punct, df_organizer
+from Code.Stopwords import stopwords_lst, verb_lst
+from Code.Functions import head_and_tail, word_count, df_punct, df_organizer, to_datetime
 
 # Week number and print data
 week = '4'
@@ -17,6 +18,11 @@ printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + st
 # Import data
 # Weekly data
 weekly = pd.read_csv(r'Data\Raw\Weekly\Raw ' + printDate + '.csv')
+
+# Creating a dict of emoji' appearing in the df
+emj_dct = demoji.findall(' '.join(weekly['text']))
+
+# Removing punctuation
 weekly = df_punct(weekly)
 
 # Overall data
@@ -25,35 +31,10 @@ PS = df_punct(PS)
 PS = PS[PS['rt'] == 0]
 PS = df_organizer(PS, sentiment='off')
 
-
-# # Creating an organization df, which will be useful for some of the visualizations
-# Organizations = PS.groupby(['organization'], as_index=False).agg({'job': ['first'],
-#                                                                   'refollowers_count': ['sum', 'mean'],
-#                                                                   'favorite_count': ['sum', 'mean'],
-#                                                                   'word_count': ['sum', 'mean'],
-#                                                                   'char_count': ['sum', 'mean'],
-#                                                                   'negative': ['mean'],
-#                                                                   'neutral': ['mean'],
-#                                                                   'positive': ['mean'],
-#                                                                   'compound': ['mean'],
-#                                                                   'text': [' '.join]})
-#
-# # Replace column names
-# Organizations.columns = list(map(''.join, Organizations.columns.values))
-# Organizations = Organizations.rename(columns={'jobfirst': 'job',
-#                                               'refollowers_countsum': 'refollowers_count',
-#                                               'refollowers_countmean': 'avg_refollowers_count',
-#                                               'favorite_countsum': 'favorite_count',
-#                                               'favorite_countmean': 'avg_favorite_count',
-#                                               'word_countsum': 'word_count',
-#                                               'word_countmean': 'avg_word_count',
-#                                               'char_countsum': 'char_count',
-#                                               'char_countmean': 'avg_char_count',
-#                                               'negativemean': 'negative',
-#                                               'neutralmean': 'neutral',
-#                                               'positivemean': 'positive',
-#                                               'compoundmean': 'compound',
-#                                               'textjoin': 'text'})
+# Sentiment data
+PS = pd.read_csv(r'Data\Sentiment\Sentiment.csv')
+PS = PS[PS['rt'] == 0].reset_index()
+PS = df_organizer(PS, sentiment='on')
 
 
 ##################################################     WORDCLOUD     ##################################################
@@ -62,6 +43,10 @@ PS = df_organizer(PS, sentiment='off')
 # First, we'll create several dataframes with the groupby function, each of them grouping the tweets along
 # different aspect. This will allow us to create different wordclouds to analyze different aspects
 system_str = ' '.join(weekly['text'])
+
+# Remove emoji's from str
+for emoji in emj_dct.values():
+    system_str = system_str.replace(emoji, '')
 
 # Remove stopwords from the system string - splitting, removing and joining back
 system_token = system_str.split()
@@ -647,13 +632,16 @@ sentiment_org_fig.show(sentiment_org_ax)
 dt = pd.read_csv(r'Data\Sentiment\Sentiment.csv')
 
 # Transform the created at column to a date column with datetime format
-dt['created_at'] = dt['created_at'].apply(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S').date())
+dt['created_at'] = to_datetime(dt['created_at'])
+
+# Drop from date column hour, minute and second
+dt['created_at'] = [t.date() for t in dt['created_at']]
 
 # Group by date, and return the mean sentiment values
 dt = dt.groupby(['created_at', 'job'], as_index=False).agg({'negative': ['mean'],
-                                                     'neutral': ['mean'],
-                                                     'positive': ['mean'],
-                                                     'compound': ['mean']})
+                                                            'neutral': ['mean'],
+                                                            'positive': ['mean'],
+                                                            'compound': ['mean']})
 
 # Replace column names
 dt.columns = list(map(''.join, dt.columns.values))
@@ -665,13 +653,13 @@ dt = dt.rename(columns={'created_at': 'date',
 
 # Transform dataframe to long format
 dt2 = pd.melt(dt,
-              id_vars='date',
-              value_vars=['negative', 'neutral', 'positive', 'compound'])
+              id_vars=['date', 'job'],
+              value_vars='compound')
 
 # Plot the compound sentiment over time
 sns.lineplot(x='date',
              y='value',
-             hue='variable',
+             hue='job',
              data=dt2)
 
 
