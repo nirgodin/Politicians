@@ -11,8 +11,7 @@ from bidi.algorithm import get_display
 from Code.Stopwords import stopwords_lst, verb_lst
 from Code.Functions import head_and_tail, word_count, df_punct, df_organizer, to_datetime
 
-# Week number and print data
-week = '4'
+# Set print date
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 
 # Import data
@@ -26,14 +25,14 @@ emj_dct = demoji.findall(' '.join(weekly['text']))
 weekly = df_punct(weekly)
 
 # Overall data
-PS = pd.read_csv(r'Data\Raw\Raw.csv')
-PS = df_punct(PS)
-PS = PS[PS['rt'] == 0]
-PS = df_organizer(PS, sentiment='off')
+# PS = pd.read_csv(r'Data\Raw\Raw.csv')
+# PS = df_punct(PS)
+# PS = PS[PS['rt'] == 0]
+# PS = df_organizer(PS, sentiment='off')
 
 # Sentiment data
 PS = pd.read_csv(r'Data\Sentiment\Sentiment.csv')
-PS = PS[PS['rt'] == 0].reset_index()
+PS = PS[PS['rt'] == 0].reset_index(drop=True)
 PS = df_organizer(PS, sentiment='on')
 
 
@@ -50,7 +49,7 @@ for emoji in emj_dct.values():
 
 # Remove stopwords from the system string - splitting, removing and joining back
 system_token = system_str.split()
-system_token = [word for word in system_token if word not in stopwords_lst]
+system_token = [word for word in system_token if word not in (stopwords_lst + verb_lst)]
 system_wc = ' '.join(system_token)
 
 # Reverse the words for correct visualization in hebrew
@@ -122,7 +121,7 @@ twt_fig.savefig(r'Visualizations\Tweets\Tweets ' + printDate + '.png')
 
 
 # Transform followers count to thosands
-PS['followers_count'] = PS['followers_count'].apply(lambda x: x/1000)
+PS['followers_count'] = PS['followers_count']/1000
 
 # Set plotting area
 flw_fig, flw_ax = plt.subplots(1, 2)
@@ -131,8 +130,10 @@ flw_fig.set_size_inches(12, 6.7)
 # Plot journalist figure
 j_flw_fig = sns.barplot(x=('followers_count'),
                         y='hebrew_name',
-                        palette='ch:.25',
-                        edgecolor='.6',
+                        hue='gender',
+                        dodge=False,
+                        # palette='ch:.25',
+                        # edgecolor='.6',
                         ax=flw_ax[0],
                         data=PS[PS['job'] == 'Journalist'].sort_values(by='followers_count',
                                                                        ascending=False).head(20))
@@ -140,10 +141,15 @@ j_flw_fig = sns.barplot(x=('followers_count'),
 # Set title to journalist figure
 j_flw_fig.set_title(get_display('עיתונאים'), fontsize=14)
 
+# Remove the left legend
+flw_ax[0].legend([], [], frameon=False)
+
 p_flw_fig = sns.barplot(x='followers_count',
                         y='hebrew_name',
-                        palette='ch:.25',
-                        edgecolor='.6',
+                        hue='gender',
+                        dodge=False,
+                        # palette='ch:.25',
+                        # edgecolor='.6',
                         ax=flw_ax[1],
                         data=PS[PS['job'] == 'Politician'].sort_values(by='followers_count',
                                                                        ascending=False).head(20))
@@ -153,8 +159,9 @@ p_flw_fig.set_title(get_display('פוליטיקאים'), fontsize=14)
 
 # Delete subplots axes titles
 for i in range(0, 2):
-    flw_ax[i].set_xlabel(get_display('מספר עוקבים'))
+    flw_ax[i].set_xlabel(get_display('מספר עוקבים (אלפים)'))
     flw_ax[i].set_ylabel('')
+    flw_ax[i]
 
 # Tight layout
 flw_fig.tight_layout()
@@ -163,7 +170,7 @@ flw_fig.tight_layout()
 flw_fig.show(flw_ax)
 
 # Export the tweet count figure
-flw_fig.savefig(r'Visualizations\Tweets\Tweets ' + printDate + '.png')
+flw_fig.savefig(r'Visualizations\Followers\Followers ' + printDate + '.png')
 
 
 #################################################      FAVORITES      #################################################
@@ -267,8 +274,10 @@ sentiment_ppl_fig, sentiment_ppl_ax = plt.subplots(1, 2)
 # Plot journalist figure
 j_sentiment_ppl_fig = sns.barplot(x='compound',
                                   y='hebrew_name',
-                                  palette='ch:.25',
-                                  edgecolor='.6',
+                                  hue='gender',
+                                  dodge=False,
+                                  # palette='ch:.25',
+                                  # edgecolor='.6',
                                   ax=sentiment_ppl_ax[0],
                                   data=head_and_tail(PS[PS['job'] == 'Journalist'].sort_values(by='compound',
                                                                                                ascending=False)))
@@ -277,12 +286,14 @@ j_sentiment_ppl_fig = sns.barplot(x='compound',
 j_sentiment_ppl_fig.set_title(get_display('עיתונאים'), fontsize=14)
 
 p_sentiment_ppl_fig = sns.barplot(x='compound',
-                              y='hebrew_name',
-                              palette='ch:.25',
-                              edgecolor='.6',
-                              ax=sentiment_ppl_ax[1],
-                              data=head_and_tail(PS[PS['job'] == 'Politician'].sort_values(by='compound',
-                                                                                           ascending=False)))
+                                  y='hebrew_name',
+                                  hue='gender',
+                                  dodge=False,
+                                  # palette='ch:.25',
+                                  # edgecolor='.6',
+                                  ax=sentiment_ppl_ax[1],
+                                  data=head_and_tail(PS[PS['job'] == 'Politician'].sort_values(by='compound',
+                                                                                               ascending=False)))
 
 # Set title to politicians figure
 p_sentiment_ppl_fig.set_title(get_display('פוליטיקאים'), fontsize=14)
@@ -368,7 +379,7 @@ gen_ax_barplot[0].legend([], [], frameon=False)
 
 # Retweets barplot
 rt_gen_barplot = sns.barplot(x='job',
-                             y='refollowers_count',
+                             y='retweet_count',
                              hue='gender',
                              ax=gen_ax_barplot[1],
                              data=PS[PS['gender'].notna()])
@@ -664,8 +675,8 @@ sns.lineplot(x='date',
 
 
 # Compute traffic and average traffic count
-df['traffic_count'] = df['refollowers_count'] + df['favorite_count']
-df['avg_traffic_count'] = df['traffic_count'] / df['followers_count']
+df['traffic_count'] = df['retweet_count'] + df['favorite_count']
+df['avg_traffic_count'] = df['traffic_count'] / df['retweet_count']
 
 # Apply the get_display function on all the hebew names in the dataframe
 df['hebrew_name'] = [get_display(df['hebrew_name'][i]) for i in df.index.tolist()]
@@ -675,6 +686,7 @@ df = df[df['text'] != '']
 
 
 ########################################             SCATTERPLOTS             ########################################
+
 
 # Insert Word count and char count columns
 PS['word_count'] = PS['text'].apply(lambda x: len(str(x).split(" ")))
@@ -687,3 +699,68 @@ sns.scatterplot(x='char_count',
 
 # Distplot - word and char count
 sns.distplot(PS['char_count'])
+
+
+########################################             HEATMAPS             ########################################
+
+
+DH = PS.copy()
+
+# Subset out media and parties
+DH = DH[DH['job'] != 'Media']
+DH = DH[DH['job'] != 'Party']
+
+# Transform the created at column to a date column with datetime format
+DH['created_at'] = to_datetime(DH['created_at'])
+
+# Create day and hour columns
+DH['day'] = [t.strftime('%A') for t in DH['created_at']]
+DH['hour'] = [t.hour for t in DH['created_at']]
+
+# Groupby day and hour
+# Group by date, and return the mean sentiment values
+DH = DH.groupby(['day', 'hour'], as_index=False).agg({'favorite_count': ['mean'],
+                                                      'retweet_count': ['mean']})
+
+# Replace column names
+DH.columns = list(map(''.join, DH.columns.values))
+DH = DH.rename(columns={'favorite_countmean': 'favorite_count',
+                        'retweet_countmean': 'retweet_count'})
+
+# Round numbers
+DH['favorite_count'] = [round(num, 0) for num in DH['favorite_count']]
+DH['retweet_count'] = [round(num, 0) for num in DH['retweet_count']]
+
+# Pivot data
+fav_hm_df = pd.pivot_table(DH,
+                           values='favorite_count',
+                           index='day',
+                           columns='hour')
+
+# Change column order
+fav_hm_df = fav_hm_df.reindex(index=['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])
+
+# Favorite Heatmap
+sns.heatmap(fav_hm_df,
+            cmap='Reds',
+            vmax=300,
+            annot=True,
+            fmt='g',
+            linewidths=.5)
+
+# Pivot data
+rt_hm_df = pd.pivot_table(DH,
+                          values='retweet_count',
+                          index='day',
+                          columns='hour')
+
+# Change column order
+rt_hm_df = rt_hm_df.reindex(index=['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'])
+
+# retweet Heatmap
+sns.heatmap(rt_hm_df,
+            cmap='Reds',
+            vmax=15,
+            annot=True,
+            linewidths=.5)
+

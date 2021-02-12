@@ -3,6 +3,7 @@ import numpy as np
 import requests
 from instascrape import *
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 from Code.Credentials import mail, password
 from bs4 import BeautifulSoup
@@ -54,9 +55,9 @@ def instush_df(dct):
 
     return df_lst
 
+
 # Import relevant libraries
-import pandas as pd
-# from Instagram Dictionaries import politicians_dct
+from Code.Instagram_Dictionaries import politicians_dct
 
 df_lst = []
 # Setting driver and entering Instagram
@@ -80,33 +81,43 @@ login.click()
 sleep(5)
 
 # Continue to the real homepage by dismissing instagram suggestions
-notnow1 = driver.find_element_by_xpath('/html/body/div[1]/section/main/div/div/div/div/button')
-notnow1.click()
-sleep(5)
-notnow2 = driver.find_element_by_xpath('/html/body/div[4]/div/div/div/div[3]/button[2]')
-notnow2.click()
-sleep(5)
-for user in list(politicians_dct.keys())[0:10]:
-    for attempt in range(0,10):
-        try:
-            # Empty dataframe to append the scraped data
-            # Posts = pd.DataFrame()
+try:
+    notnow1 = driver.find_element_by_xpath('/html/body/div[1]/section/main/div/div/div/div/button')
+    notnow1.click()
+    sleep(5)
+except NoSuchElementException:
+    pass
+try:
+    notnow2 = driver.find_element_by_xpath('/html/body/div[4]/div/div/div/div[3]/button[2]')
+    notnow2.click()
+    sleep(5)
+except NoSuchElementException:
+    pass
 
-            # session_id = generate_session()
-            profile = Profile(politicians_dct[user][0])
-            profile.scrape(webdriver=driver)
-            posts = profile.get_posts(webdriver=driver, scrape=True)
-            posts_df = pd.DataFrame([post.to_dict() for post in posts])
-            df_lst.append(posts_df)
-        except ValueError:
-            pass
-        except IndexError:
-            sleep(600)
-            continue
-        else:
-            print('we failed all the attempts - deal with the consequences.')
+for user in list(politicians_dct.keys())[61:len(politicians_dct)]:
+    try:
+        # Empty dataframe to append the scraped data
+        # Posts = pd.DataFrame()
+
+        # session_id = generate_session()
+        profile = Profile(politicians_dct[user][0])
+        profile.scrape(webdriver=driver)
+        posts = profile.get_posts(amount=50, webdriver=driver, scrape=True, scrape_pause=30)
+        posts_df = pd.DataFrame([post.to_dict() for post in posts])
+        posts_df.insert(0, 'name', user)
+        df_lst.append(posts_df)
+        sleep(600)
+    except (ValueError, IndexError) as e:
+        posts_df = pd.DataFrame([post.to_dict() for post in posts])
+        df_lst.append(posts_df)
+        sleep(600)
+        continue
 
 
-lala = instush_df(politicians_dct)
+Politicians = pd.concat(df_lst)
 
-type()
+Instagram = pd.read_csv(r'Data/Instagram/Instagram.csv')
+
+Politicians = pd.concat([Instagram, Politicians])
+
+Politicians.to_csv(r'Data/Instagram/Instagram.csv', index=False) # encoding='utf-8-sig'

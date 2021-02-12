@@ -197,13 +197,16 @@ def df_organizer(df, sentiment='on'):
     df['word_count'] = df['text'].apply(lambda x: len(str(x).split(" ")))
     df['char_count'] = df['text'].apply(lambda x: sum(len(word) for word in str(x).split(" ")))
 
+    # Drop rows with null text
+    # df = df[df['text'] != '']
+
     # Group by name, and return the concatenated text, the sum of the word and the char count, and the number of tweets
     if sentiment == 'on':
         df = df.groupby(['name'], as_index=False).agg({'job': ['first'],
                                                        'organization': ['first'],
                                                        'gender': ['first', 'size'],
                                                        'hebrew_name': ['first'],
-                                                       'followers_count': ['first'],
+                                                       'followers_count': ['max'],
                                                        'retweet_count': ['sum', 'mean'],
                                                        'favorite_count': ['sum', 'mean'],
                                                        'word_count': ['sum', 'mean'],
@@ -211,8 +214,8 @@ def df_organizer(df, sentiment='on'):
                                                        'negative': ['mean'],
                                                        'neutral': ['mean'],
                                                        'positive': ['mean'],
-                                                       'compound': ['mean'],
-                                                       'text': [' '.join]})
+                                                       'compound': ['mean']}) #,
+                                                       # 'text': [' '.join]
 
         # Replace column names
         df.columns = list(map(''.join, df.columns.values))
@@ -233,8 +236,8 @@ def df_organizer(df, sentiment='on'):
                                 'negativemean': 'negative',
                                 'neutralmean': 'neutral',
                                 'positivemean': 'positive',
-                                'compoundmean': 'compound',
-                                'textjoin': 'text'})
+                                'compoundmean': 'compound'}) #,
+                                # 'textjoin': 'text'
     else:
         df = df.groupby(['name'], as_index=False).agg({'job': ['first'],
                                                        'organization': ['first'],
@@ -271,9 +274,6 @@ def df_organizer(df, sentiment='on'):
 
     # Apply the get_display function on all the hebew names in the dataframe
     df['hebrew_name'] = [get_display(df['hebrew_name'][i]) for i in df.index.tolist()]
-
-    # Drop rows with null text
-    df = df[df['text'] != '']
 
     return df
 
