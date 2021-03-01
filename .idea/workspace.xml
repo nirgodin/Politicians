@@ -2,20 +2,28 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f3dbd698-9409-4bea-9e93-9c979b87d9e2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Code/Facebook Scraping.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Visualizations/Followers/Followers 1-2-2021.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Visualizations/Wordclouds/Wordcloud 12-2-2021.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Visualizations/Wordclouds/Wordcloud 5-2-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Code/Gender Analysis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Gender/Article Cover 25-2-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Gender/Sentiment Boxplot 24-2-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Gender/Traffic Barplot 24-2-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Gender/Traffic Boxplot 19-2-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Gender/Word Difference 24-2-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Sentiment/Journalists 16-2-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Sentiment/Politicians 16-2-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Wordclouds/Wordcloud 19-2-2021.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Visualizations/Wordclouds/Wordcloud 26-2-2021.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Dictionaries.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Dictionaries.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Facebook Scraping.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Facebook Scraping.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Code/Instagram Dictionaries.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Code/Instagram Scraping.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Instagram Scraping.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Code/Instagram_Dictionaries.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Instagram_Dictionaries.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Stopwords.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Stopwords.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Tweets Scraping.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Tweets Scraping.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Code/Visualizing.py" beforeDir="false" afterPath="$PROJECT_DIR$/Code/Visualizing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Data/Raw/Raw.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Raw/Raw.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/debug.log" beforeDir="false" afterPath="$PROJECT_DIR$/debug.log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Data/Sentiment/Sentiment.csv" beforeDir="false" afterPath="$PROJECT_DIR$/Data/Sentiment/Sentiment.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Visualizations/Gender/Traffic Barplot 15-1-2021.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Visualizations/Gender/Traffic Boxplot 15-1-2021.png" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

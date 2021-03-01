@@ -106,12 +106,12 @@ def tweets_df(dct, startDate, endDate):
 
 
 # Punctuation delete function
-def df_punct(df):
+def df_punct(df, emoji='on'):
 
     # Import necessary libraries
     import re
     import demoji
-    demoji.download_codes()
+    # demoji.download_codes()
 
     # Reset index
     df = df.reset_index(drop=True)
@@ -123,10 +123,13 @@ def df_punct(df):
     df['rt'] = [1 if 'RT @' in txt else 0 for txt in df['text']]
 
     # Replace all emojis with word representations
-    big_str = ' '.join(df['text'])
-    emj_dct = demoji.findall(big_str)
-    for emoji in emj_dct:
-        df['text'] = df['text'].str.replace(emoji, emj_dct[emoji])
+    if emoji == 'on':
+        big_str = ' '.join(df['text'])
+        emj_dct = demoji.findall(big_str)
+        for emoji in emj_dct:
+            df['text'] = df['text'].str.replace(emoji, emj_dct[emoji])
+    elif emoji == 'off':
+        pass
 
     # Delete from the text strings 'rt' which indicates a Retweet
     df['text'] = [re.sub(r'rt', "", txt) for txt in df['text']]

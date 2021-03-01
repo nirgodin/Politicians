@@ -10,6 +10,7 @@ import demoji
 from bidi.algorithm import get_display
 from Code.Stopwords import stopwords_lst, verb_lst
 from Code.Functions import head_and_tail, word_count, df_punct, df_organizer, to_datetime
+from Code.Dictionaries import type_dct
 
 # Set print date
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
@@ -23,12 +24,6 @@ emj_dct = demoji.findall(' '.join(weekly['text']))
 
 # Removing punctuation
 weekly = df_punct(weekly)
-
-# Overall data
-# PS = pd.read_csv(r'Data\Raw\Raw.csv')
-# PS = df_punct(PS)
-# PS = PS[PS['rt'] == 0]
-# PS = df_organizer(PS, sentiment='off')
 
 # Sentiment data
 PS = pd.read_csv(r'Data\Sentiment\Sentiment.csv')
@@ -265,234 +260,86 @@ rt_fig.show(fav_ax)
 rt_fig.savefig(r'Visualizations\Retweets\Retweets ' + printDate + '.png')
 
 
-#############################################      SENTIMENT - PEOPLE      #############################################
+##########################################      SENTIMENT - JOURNALISTS      ##########################################
 
+
+# Minor data adjustments
+# Add media type to journalists and political Gush
+PS['type'] = PS['organization'].map(type_dct)
+PS['type'] = [get_display(name) for name in PS['type']]
 
 # Set plotting area
-sentiment_ppl_fig, sentiment_ppl_ax = plt.subplots(1, 2)
+j_sentiment_ppl_fig = plt.figure()
+j_sentiment_ppl_fig.set_size_inches(12, 6.7)
 
-# Plot journalist figure
+# Plot journalists figure
 j_sentiment_ppl_fig = sns.barplot(x='compound',
                                   y='hebrew_name',
-                                  hue='gender',
+                                  hue='type',
                                   dodge=False,
-                                  # palette='ch:.25',
-                                  # edgecolor='.6',
-                                  ax=sentiment_ppl_ax[0],
                                   data=head_and_tail(PS[PS['job'] == 'Journalist'].sort_values(by='compound',
-                                                                                               ascending=False)))
+                                                                                               ascending=False),
+                                                     nrow=10))
 
 # Set title to journalist figure
-j_sentiment_ppl_fig.set_title(get_display('עיתונאים'), fontsize=14)
+j_sentiment_ppl_fig.set_title(get_display('עיתונאים'), fontsize=16)
 
+# Delete subplots axes titles
+j_sentiment_ppl_fig.set_xlabel('')
+j_sentiment_ppl_fig.set_ylabel('')
+
+# Remove legend title
+handles, labels = j_sentiment_ppl_fig.get_legend_handles_labels()
+j_sentiment_ppl_fig.legend(handles=handles[0:], labels=labels[0:])
+
+# Change legend position
+j_sentiment_ppl_fig.legend(loc='lower right')
+
+# Tight Layout
+plt.tight_layout()
+
+# Export figure
+jrnl_snt_fig = j_sentiment_ppl_fig.get_figure()
+jrnl_snt_fig.savefig(r'Visualizations\Sentiment\Journalists ' + printDate + '.png')
+
+
+##########################################      SENTIMENT - POLITICIANS      ##########################################
+
+# Set plotting area
+p_sentiment_ppl_fig = plt.figure()
+p_sentiment_ppl_fig.set_size_inches(12, 6.7)
+
+# Plot politicians figure
 p_sentiment_ppl_fig = sns.barplot(x='compound',
                                   y='hebrew_name',
-                                  hue='gender',
+                                  hue='type',
                                   dodge=False,
-                                  # palette='ch:.25',
-                                  # edgecolor='.6',
-                                  ax=sentiment_ppl_ax[1],
                                   data=head_and_tail(PS[PS['job'] == 'Politician'].sort_values(by='compound',
-                                                                                               ascending=False)))
+                                                                                               ascending=False),
+                                                     nrow=10))
 
 # Set title to politicians figure
-p_sentiment_ppl_fig.set_title(get_display('פוליטיקאים'), fontsize=14)
+p_sentiment_ppl_fig.set_title(get_display('פוליטיקאים'), fontsize=16)
 
 # Delete subplots axes titles
-for i in range(0, 2):
-    sentiment_ppl_ax[i].set_xlabel('')
-    sentiment_ppl_ax[i].set_ylabel('')
+p_sentiment_ppl_fig.set_xlabel('')
+p_sentiment_ppl_fig.set_ylabel('')
 
-# Set main title to the whole figure
-sentiment_ppl_fig.suptitle(get_display('הצייצנים עם הציוצים החיוביים ביותר והשליליים ביותר'), fontsize=16)
+# Remove legend title
+handles, labels = p_sentiment_ppl_fig.get_legend_handles_labels()
+p_sentiment_ppl_fig.legend(handles=handles[0:], labels=labels[0:])
 
-# Show the retweets figure
-sentiment_ppl_fig.show(sentiment_ppl_ax)
+# Change legend position
+p_sentiment_ppl_fig.legend(loc='lower right')
 
+# Tight Layout
+plt.tight_layout()
 
-#######################################       GENDER - WORD USE DIFFERENCE       #######################################
-
-
-PS['text'] = [re.sub(r'[A-Z,a-z,\d+,_,]+', "", txt) for txt in PS['text']]
-
-male_str = ' '.join(PS['text'][PS['gender'] == 'Male'])
-female_str = ' '.join(PS['text'][PS['gender'] == 'Female'])
-male_word_count = word_count(male_str)
-female_word_count = word_count(female_str)
-male_twt_count = len(PS[PS['gender'] == 'Male'])
-female_twt_count = len(PS[PS['gender'] == 'Female'])
-
-# Merge
-gender_df = pd.merge(male_word_count,
-                     female_word_count,
-                     how='outer',
-                     on='word',
-                     suffixes=['_male', '_female'])
-
-# Assign nan values the value zero, beacuse they indicates zero use of these words
-gender_df = gender_df.fillna(0)
-
-# Drop Stopwords
-gender_df = gender_df[~gender_df['word'].isin(stopwords_lst + verb_lst)].reset_index(drop=True)
-
-# Apply the get_display on the word for the visualization
-gender_df['word'] = [get_display(word) for word in gender_df['word']]
-
-# Normalize the word count to the number of tweets by male and female
-gender_df['count_male'] = gender_df['count_male'] / male_twt_count
-gender_df['count_female'] = gender_df['count_female'] / female_twt_count
-
-# Compute the differnce in the count of each word between males and females
-# A positive number indicates words that were used more frequently by females than by males.
-# A negative number indictaes the opposite
-gender_df['difference'] = gender_df['count_female'] - gender_df['count_male']
-
-# Visualize
-gen_word_diff = sns.catplot(x='difference',
-                            y='word',
-                            palette='ch:.25',
-                            edgecolor='.6',
-                            kind='bar',
-                            data=head_and_tail(gender_df.sort_values(by='difference',
-                                                                     ascending=False).reset_index(drop=True)))
+# Export figure
+plt_snt_fig = p_sentiment_ppl_fig.get_figure()
+plt_snt_fig.savefig(r'Visualizations\Sentiment\Politicians ' + printDate + '.png')
 
 
-########################################       GENDER - TRAFFIC BARPLOTS       ########################################
-
-
-# Set plotting area
-gen_fig_barplot, gen_ax_barplot = plt.subplots(1, 2)
-gen_fig_barplot.set_size_inches(12, 6.7)
-
-# Favorites barplot
-fav_gen_barplot = sns.barplot(x='job',
-                              y='favorite_count',
-                              hue='gender',
-                              ax=gen_ax_barplot[0],
-                              data=PS[PS['gender'].notna()])
-
-# Set title to the gender favorites subplot
-fav_gen_barplot.set_title(get_display('Likes'), fontsize=14)
-
-# Remove the left legend
-gen_ax_barplot[0].legend([], [], frameon=False)
-
-# Retweets barplot
-rt_gen_barplot = sns.barplot(x='job',
-                             y='retweet_count',
-                             hue='gender',
-                             ax=gen_ax_barplot[1],
-                             data=PS[PS['gender'].notna()])
-
-# Set title to the gender retweets subplot
-rt_gen_barplot.set_title(get_display('Retweets'), fontsize=14)
-
-# Modify slightly the legend
-gen_ax_barplot[1].legend(title='Gender')
-
-# Delete subplots axes titles
-for i in range(0, 2):
-    gen_ax_barplot[i].set_xlabel('')
-    gen_ax_barplot[i].set_ylabel('')
-
-# Tight layout
-gen_fig_barplot.tight_layout()
-
-# Show the retweets figure
-gen_fig_barplot.show(gen_ax_barplot)
-
-# Export the retweets count figure
-gen_fig_barplot.savefig(r'Visualizations\Gender\Traffic Barplot ' + printDate + '.png')
-
-########################################       GENDER - TRAFFIC BOXPLOTS       ########################################
-
-BP = PS[(PS['favorite_count'] != 0) & (PS['refollowers_count'] != 0)]
-BP['log_favorite_count'] = np.log(PS['favorite_count'])
-BP['log_refollowers_count'] = np.log(PS['refollowers_count'])
-
-# Set plotting area
-gen_fig_boxplot, gen_ax_boxplot = plt.subplots(1, 2)
-gen_fig_boxplot.set_size_inches(12, 6.7)
-
-# Gender favorites boxplot
-fav_gen_boxplot = sns.boxplot(x='job',
-                              y='log_favorite_count',
-                              hue='gender',
-                              showfliers=False,
-                              ax=gen_ax_boxplot[0],
-                              data=BP[BP['gender'].notna()])
-
-# Remove the left legend
-gen_ax_boxplot[0].legend([], [], frameon=False)
-
-# Set title to the gender favorites subplot
-fav_gen_boxplot.set_title(get_display('Likes'), fontsize=14)
-
-# Gender retweet boxplot
-rt_gen_boxplot = sns.boxplot(x='job',
-                             y='log_refollowers_count',
-                             hue='gender',
-                             showfliers=False,
-                             ax=gen_ax_boxplot[1],
-                             data=BP[BP['gender'].notna()])
-
-# Set title to the gender retweets subplot
-rt_gen_boxplot.set_title(get_display('Retweets'), fontsize=14)
-
-# Delete subplots axes titles
-for i in range(0, 2):
-    gen_ax_boxplot[i].set_xlabel('')
-    gen_ax_boxplot[i].set_ylabel('')
-
-# Modify slightly the legend
-gen_ax_boxplot[1].legend(title='Gender')
-
-# Tight layout
-gen_fig_boxplot.tight_layout()
-
-# Show the retweets figure
-gen_fig_boxplot.show(gen_ax_boxplot)
-
-# Export the retweets count figure
-gen_fig_boxplot.savefig(r'Visualizations\Gender\Traffic Boxplot ' + printDate + '.png')
-
-
-#########################################       GENDER - WORD-CHAR COUNT       #########################################
-
-
-gen_fig_words, gen_ax_words = plt.subplots(1, 2)
-
-# Gender char count boxplot
-sns.boxplot(x='job',
-            y='avg_char_count',
-            palette='Set3',
-            hue='gender',
-            showfliers=False,
-            ax=gen_ax_words[0],
-            data=PS[PS['gender'].notna()])
-
-# Gender word count boxplot
-sns.boxplot(x='job',
-            y='avg_word_count',
-            palette='Set3',
-            hue='gender',
-            showfliers=False,
-            ax=gen_ax_words[1],
-            data=PS[PS['gender'].notna()])
-
-gen_fig_words.show(gen_ax_words)
-
-
-#######################################       GENDER - SENTIMENT ANALYSIS       #######################################
-
-
-# Gender char count boxplot
-gen_fig_snt = sns.boxplot(x='job',
-                          y='compound',
-                          palette='Set3',
-                          hue='gender',
-                          showfliers=False,
-                          data=PS[PS['job'].isin(['Journalist', 'Politician'])])
 
 
 ##############################################       ORGANIZATIONS       ##############################################
@@ -710,6 +557,8 @@ DH = PS.copy()
 DH = DH[DH['job'] != 'Media']
 DH = DH[DH['job'] != 'Party']
 
+DH = DH[DH['job'] == 'Politician']
+
 # Transform the created at column to a date column with datetime format
 DH['created_at'] = to_datetime(DH['created_at'])
 
@@ -719,13 +568,13 @@ DH['hour'] = [t.hour for t in DH['created_at']]
 
 # Groupby day and hour
 # Group by date, and return the mean sentiment values
-DH = DH.groupby(['day', 'hour'], as_index=False).agg({'favorite_count': ['mean'],
-                                                      'retweet_count': ['mean']})
+DH = DH.groupby(['day', 'hour'], as_index=False).agg({'favorite_count': ['median'],
+                                                      'retweet_count': ['median']})
 
 # Replace column names
 DH.columns = list(map(''.join, DH.columns.values))
-DH = DH.rename(columns={'favorite_countmean': 'favorite_count',
-                        'retweet_countmean': 'retweet_count'})
+DH = DH.rename(columns={'favorite_countmedian': 'favorite_count',
+                        'retweet_countmedian': 'retweet_count'})
 
 # Round numbers
 DH['favorite_count'] = [round(num, 0) for num in DH['favorite_count']]
@@ -743,7 +592,7 @@ fav_hm_df = fav_hm_df.reindex(index=['Sunday', 'Monday', 'Tuesday', 'Wednesday',
 # Favorite Heatmap
 sns.heatmap(fav_hm_df,
             cmap='Reds',
-            vmax=300,
+            vmax=350,
             annot=True,
             fmt='g',
             linewidths=.5)

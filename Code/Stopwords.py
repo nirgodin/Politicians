@@ -187,7 +187,9 @@ stopwords_manually = ['אני',
                       'אכן',
                       'דווקא',
                       'בה',
-                      'rea hea',
+                      'red hea',
+                      'red',
+                      'hea',
                       'צריך',
                       'צריכים',
                       'אחרת',
@@ -200,7 +202,19 @@ stopwords_manually = ['אני',
                       'ומה',
                       'ע',
                       'הבא',
-                      'בת']
+                      'בת',
+                      'לזה',
+                      'עליו',
+                      'ל']
 
 stopwords_lst = stopwords_lst + stopwords_manually
 
+verb_manually = ['מסכימה',
+                 'מסכים',
+                 'חושבת',
+                 'יודעת',
+                 'מכירה',
+                 'יכולה',
+                 'מבינה']
+
+verb_lst = verb_lst + verb_manually

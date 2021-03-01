@@ -6,10 +6,9 @@ from Code.Functions import tweets_df, df_punct, df_sentiment, df_organizer, to_d
 
 # Setting start and end date, to scrape tweets in between. Also, setting week number for data export and import
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
-startDate = datetime(2021, 2, 5)
-endDate = datetime(2021, 2, 12)
+startDate = datetime(2021, 2, 19)
+endDate = datetime(2021, 2, 26)
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
-week = '3'
 
 # Create four dataframes, for the four types of twitter figures - Politicians, Journalists, Media and Parties
 Politicians = tweets_df(politicians_dct, startDate, endDate)
@@ -45,6 +44,7 @@ Raw.to_csv(r'Data\Raw\Raw.csv', index=False)
 
 
 PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw ' + printDate + '.csv')
+# PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw ' + '19-2-2021' + '.csv')
 
 # Delete punctuation
 PS_raw = df_punct(PS_raw)
@@ -54,10 +54,12 @@ PS_sentiment1 = df_sentiment(PS_raw.head(5000))
 PS_sentiment2 = df_sentiment(PS_raw.iloc[5000:10000])
 PS_sentiment3 = df_sentiment(PS_raw.iloc[10000:15000])
 PS_sentiment4 = df_sentiment(PS_raw.iloc[15000:len(PS_raw)])
+
 PS_sentiment = pd.concat([PS_sentiment1,
                           PS_sentiment2,
                           PS_sentiment3,
                           PS_sentiment4])
+
 
 ##############
 

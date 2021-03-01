@@ -1,6 +1,8 @@
 politicians_dct = {'Abutbul': ['mkabutbulmoshe', 'Shas', 'Male', 'אבוטבול'],
                    'Avidar': ['eavidar', 'Israel_Beytenu', 'Male', 'אבידר'],
                    'Edelstein': ['yuli.edelstein', 'Likud', 'Male', 'אדלשטיין'],
+                   'Ohana': ['amirohana', 'Likud', 'Male', 'אוחנה'],
+                   'Orbach': ['nir_orbach1', 'Yamina', 'Male', 'אורבך'],
                    'Elharrar': ['karinel09', 'Yesh_Atid', 'Female', 'אלהרר'],
                    'Alkhrumi': ['saeed.alkhrumi', 'Meshutefet', 'Male', 'אלחרומי'],
                    'Elkin': ['zeev_elkin', 'Tikva_Chadasha', 'Male', 'אלקין'],
