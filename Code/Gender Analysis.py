@@ -19,7 +19,7 @@ PS = pd.read_csv(r'Data\Raw\Raw.csv')
 PS['text'] = [str(txt) for txt in PS['text']]
 
 # Remove users tagged
-# PS['text'] = [' '.join(re.sub('(@[A-Za-z0-9_]+)', ' ', txt).split()) for txt in PS['text']]
+PS['text'] = [' '.join(re.sub('(@[A-Za-z0-9_]+)', ' ', txt).split()) for txt in PS['text']]
 
 PS = df_punct(PS, emoji='off')
 PS = PS[PS['rt'] == 0].reset_index(drop=True)
@@ -31,6 +31,7 @@ printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + st
 
 #######################################           WORD USE DIFFERENCE           #######################################
 
+PS = PS[(PS['job'] == 'Journalist') | (PS['job'] == 'Politician')]
 
 # Join separately all texts by males and all texts by females
 male_str = ' '.join(PS['text'][PS['gender'] == 'Male'])
@@ -175,7 +176,7 @@ BP['log_retweet_count'] = np.log(BP['retweet_count'])
 
 # Set plotting area
 gen_fig_boxplot, gen_ax_boxplot = plt.subplots(1, 2)
-gen_fig_boxplot.set_size_inches(9.92, 5.33333)
+gen_fig_boxplot.set_size_inches(12, 6.7)
 
 # Gender favorites boxplot
 fav_gen_boxplot = sns.boxplot(x='job',
@@ -183,13 +184,13 @@ fav_gen_boxplot = sns.boxplot(x='job',
                               hue='gender',
                               showfliers=False,
                               ax=gen_ax_boxplot[0],
-                              data=BP[BP['gender'].notna()])
+                              data=BP[(BP['job'] == 'Journalist') | (BP['job'] == 'Politician')])
 
 # Remove the left legend
 gen_ax_boxplot[0].legend([], [], frameon=False)
 
 # Set title to the gender favorites subplot
-fav_gen_boxplot.set_title(get_display('Likes'), fontsize=14)
+fav_gen_boxplot.set_title(get_display('Likes'), fontsize=18)
 
 # Gender retweet boxplot
 rt_gen_boxplot = sns.boxplot(x='job',
@@ -197,18 +198,21 @@ rt_gen_boxplot = sns.boxplot(x='job',
                              hue='gender',
                              showfliers=False,
                              ax=gen_ax_boxplot[1],
-                             data=BP[BP['gender'].notna()])
+                             data=BP[(BP['job'] == 'Journalist') | (BP['job'] == 'Politician')])
 
 # Set title to the gender retweets subplot
-rt_gen_boxplot.set_title(get_display('Retweets'), fontsize=14)
+rt_gen_boxplot.set_title(get_display('Retweets'), fontsize=18)
 
 # Delete subplots axes titles
 for i in range(0, 2):
     gen_ax_boxplot[i].set_xlabel('')
     gen_ax_boxplot[i].set_ylabel('')
+    gen_ax_boxplot[i].tick_params(axis='both', which='major', labelsize=14)
 
 # Modify slightly the legend
-gen_ax_boxplot[1].legend(title='Gender')
+gen_ax_boxplot[1].legend(title='Gender',
+                         fontsize=12,
+                         title_fontsize=12)
 
 # Tight layout
 gen_fig_boxplot.tight_layout()
@@ -217,7 +221,7 @@ gen_fig_boxplot.tight_layout()
 gen_fig_boxplot.show(gen_ax_boxplot)
 
 # Export the retweets count figure
-gen_fig_boxplot.savefig(r'Visualizations\Gender\Article Cover ' + printDate + '.png')
+gen_fig_boxplot.savefig(r'Visualizations\Gender\Traffic Boxplot ' + printDate + '.png')
 
 
 #########################################           WORD-CHAR COUNT           #########################################
@@ -253,7 +257,7 @@ gen_fig_words.show(gen_ax_words)
 
 
 # Initialize figure area and size
-gen_fig_snt, gen_fig_ax = plt.subplots(1, 1)
+gen_fig_snt, gen_fig_ax = plt.subplots()
 gen_fig_snt.set_size_inches(12, 6.7)
 
 # Plot
@@ -265,15 +269,14 @@ sns.boxplot(x='job',
 
 # Modify slightly the legend
 gen_fig_ax.legend(title='Gender',
-                  fontsize=10,
-                  title_fontsize=10)
+                  fontsize=14,
+                  title_fontsize=14)
 
 # Change x and y labels
 gen_fig_ax.set_xlabel('')
-gen_fig_ax.set_ylabel('Sentiment', size=14)
-gen_fig_ax.tick_params(axis='x', which='major', labelsize=14)
-gen_fig_ax.tick_params(axis='y', which='major', labelsize=10)
-
+gen_fig_ax.set_ylabel('Sentiment', size=18)
+gen_fig_ax.tick_params(axis='x', which='major', labelsize=18)
+gen_fig_ax.tick_params(axis='y', which='major', labelsize=12)
 
 # Export Figure
 gen_fig_snt.savefig(r'Visualizations\Gender\Sentiment Boxplot ' + printDate + '.png')

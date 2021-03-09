@@ -178,12 +178,12 @@ fav_fig, fav_ax = plt.subplots(1, 2)
 fav_fig.set_size_inches(12, 6.7)
 
 # Plot journalist figure
-j_fav_fig = sns.barplot(x='avg_favorite_count',
+j_fav_fig = sns.barplot(x='favorite_count',
                         y='hebrew_name',
                         palette='ch:.25',
                         edgecolor='.6',
                         ax=fav_ax[0],
-                        data=PS[PS['job'] == 'Journalist'].sort_values(by='avg_favorite_count',
+                        data=PS[PS['job'] == 'Journalist'].sort_values(by='favorite_count',
                                                                        ascending=False).head(20))
 
 # Set title to journalist figure

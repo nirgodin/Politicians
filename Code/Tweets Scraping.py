@@ -6,8 +6,8 @@ from Code.Functions import tweets_df, df_punct, df_sentiment, df_organizer, to_d
 
 # Setting start and end date, to scrape tweets in between. Also, setting week number for data export and import
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
-startDate = datetime(2021, 2, 19)
-endDate = datetime(2021, 2, 26)
+startDate = datetime(2021, 2, 26)
+endDate = datetime(2021, 3, 5)
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 
 # Create four dataframes, for the four types of twitter figures - Politicians, Journalists, Media and Parties
