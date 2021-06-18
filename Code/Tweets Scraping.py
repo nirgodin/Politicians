@@ -6,8 +6,8 @@ from Code.Functions import tweets_df, df_punct, df_sentiment, df_organizer, to_d
 
 # Setting start and end date, to scrape tweets in between. Also, setting week number for data export and import
 # datetime function format is: Year, Month, Day, Hour, Minutes, Seconds, Timezone
-startDate = datetime(2021, 3, 26)
-endDate = datetime(2021, 4, 2)
+startDate = datetime(2021, 4, 16)
+endDate = datetime(2021, 4, 23)
 printDate = str(datetime.now().day) + '-' + str(datetime.now().month) + '-' + str(datetime.now().year)
 
 # Create four dataframes, for the four types of twitter figures - Politicians, Journalists, Media and Parties
@@ -41,37 +41,37 @@ Raw.to_csv(r'Data\Raw\Raw.csv', index=False)
 
 
 ###########################              SKETCH                   ########################
-
-
-# PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw ' + printDate + '.csv')
-PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw ' + '19-3-2021' + '.csv')
-
-# Delete punctuation
-PS_raw = df_punct(PS_raw)
-
-# Compute sentiment and export
-PS_sentiment1 = df_sentiment(PS_raw.head(5000))
-PS_sentiment2 = df_sentiment(PS_raw.iloc[5000:10000])
-PS_sentiment3 = df_sentiment(PS_raw.iloc[10000:15000])
-PS_sentiment4 = df_sentiment(PS_raw.iloc[15000:len(PS_raw)])
-
-PS_sentiment = pd.concat([PS_sentiment1,
-                          PS_sentiment2,
-                          PS_sentiment3,
-                          PS_sentiment4])
-
-
-##############
-
-PS_sentiment.to_csv(r'Data\Sentiment\Weekly\Sentiment ' + '19-3-2021' + '.csv', index=False)
-
-# Appending by dfs concatenation the data to the csv file containing data from all dates
-# Importing the full dataframe
-Sentiment = pd.read_csv(r'Data\Sentiment\Sentiment.csv', low_memory=False)
-
-# Verifying the currently scraped dataframe is in the same column order as the final data one
-PS_sentiment = PS_sentiment[Sentiment.columns]
-
-# Concatenating and saving
-Sentiment = pd.concat([Sentiment, PS_sentiment])
-Sentiment.to_csv(r'Data\Sentiment\Sentiment.csv', index=False)
+#
+#
+# # PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw ' + printDate + '.csv')
+# PS_raw = pd.read_csv(r'Data/Raw/Weekly/Raw ' + '19-3-2021' + '.csv')
+#
+# # Delete punctuation
+# PS_raw = df_punct(PS_raw)
+#
+# # Compute sentiment and export
+# PS_sentiment1 = df_sentiment(PS_raw.head(5000))
+# PS_sentiment2 = df_sentiment(PS_raw.iloc[5000:10000])
+# PS_sentiment3 = df_sentiment(PS_raw.iloc[10000:15000])
+# PS_sentiment4 = df_sentiment(PS_raw.iloc[15000:len(PS_raw)])
+#
+# PS_sentiment = pd.concat([PS_sentiment1,
+#                           PS_sentiment2,
+#                           PS_sentiment3,
+#                           PS_sentiment4])
+#
+#
+# ##############
+#
+# PS_sentiment.to_csv(r'Data\Sentiment\Weekly\Sentiment ' + '19-3-2021' + '.csv', index=False)
+#
+# # Appending by dfs concatenation the data to the csv file containing data from all dates
+# # Importing the full dataframe
+# Sentiment = pd.read_csv(r'Data\Sentiment\Sentiment.csv', low_memory=False)
+#
+# # Verifying the currently scraped dataframe is in the same column order as the final data one
+# PS_sentiment = PS_sentiment[Sentiment.columns]
+#
+# # Concatenating and saving
+# Sentiment = pd.concat([Sentiment, PS_sentiment])
+# Sentiment.to_csv(r'Data\Sentiment\Sentiment.csv', index=False)
