@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f3dbd698-9409-4bea-9e93-9c979b87d9e2" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Historical Database/PoliticalShapley.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Browsers/chromedriver.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/KnessetWebsiteScraper.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.name" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Historical Database/ShapleyValues.py" beforeDir="false" afterPath="$PROJECT_DIR$/Historical Database/ShapleyValues.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
